@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, ScrollView, StyleSheet, Linking } from 'react-native';
-import { X, CheckCircle, Clock, Star, Heart, Smartphone } from 'lucide-react-native';
+import { X, CheckCircle, Clock, Star, Heart, Smartphone, UserCircle } from 'lucide-react-native';
 
 const RoadmapItem = ({ title, description, status, icon }) => (
   <View style={styles.roadmapItem}>
@@ -78,6 +78,12 @@ const RoadmapModal = ({ isVisible, onClose }) => {
       description: 'Mejoras continuas y optimización para ambas plataformas',
       status: 'pending',
       icon: <Smartphone size={20} color="#fbbf24" />
+    },
+    {
+      title: 'Cuentas de Usuario',
+      description: 'Guarda tu progreso y estadísticas en la nube para acceder desde cualquier dispositivo.',
+      status: 'pending',
+      icon: <UserCircle size={20} color="#fbbf24" />
     }
   ];
 

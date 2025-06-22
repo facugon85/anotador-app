@@ -10,9 +10,21 @@ const PlayerCard = ({
   isLast,
   maxScore,
   onPress,
+  gameType = 'truco', // 'truco' or 'chinchon'
 }) => {
   const progress = maxScore > 0 ? Math.min((score / maxScore) * 100, 100) : 0;
   const isOverLimit = maxScore > 0 && score > maxScore;
+
+  const getTrucoFlameColor = () => {
+    if (isLeading) return '#84cc16';
+    return '#52525b';
+  };
+
+  const getChinchonBarColor = () => {
+    if (score >= maxScore * 0.75) return '#f97316'; // Orange
+    if (score >= maxScore * 0.5) return '#facc15'; // Yellow
+    return '#84cc16'; // Green
+  };
 
   return (
     <TouchableOpacity
@@ -24,8 +36,8 @@ const PlayerCard = ({
       <View style={styles.header}>
         <View style={styles.nameContainer}>
           <Text style={styles.name}>{name}</Text>
-          {isLeading && !isWinner && <Flame size={22} color="#84cc16" style={styles.icon} />}
-          {isLast && !isWinner && <Skull size={20} color="#737373" style={styles.icon} />}
+          {gameType === 'truco' && <Flame size={22} color={getTrucoFlameColor()} style={styles.icon} />}
+          {isOverLimit && <Skull size={20} color="#737373" style={styles.icon} />}
         </View>
         <Text
           style={[
@@ -43,7 +55,10 @@ const PlayerCard = ({
           <View
             style={[
               styles.progressBar,
-              { width: `${progress}%` },
+              { 
+                width: `${progress}%`,
+                backgroundColor: gameType === 'chinchon' ? getChinchonBarColor() : styles.progressBar.backgroundColor,
+              },
               isOverLimit && styles.overLimitProgress
             ]}
           />

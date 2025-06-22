@@ -198,6 +198,7 @@ export default function ChinchonScreen() {
               isLast={last?.id === jugador.id && jugadores.length > 1}
               maxScore={limitePuntos}
               onPress={() => handleOpenModal(jugador)}
+              gameType="chinchon"
             />
           ))}
         </View>

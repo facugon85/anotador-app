@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Importar pantallas
@@ -11,10 +11,19 @@ import ChinchonScreen from './screens/ChinchonScreen';
 
 const Stack = createStackNavigator();
 
+const MyTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: '#171717',
+    card: '#171717',
+  },
+};
+
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer theme={MyTheme}>
         <Stack.Navigator
           initialRouteName="Home"
           screenOptions={{
@@ -29,6 +38,8 @@ export default function App() {
               color: '#ffffff',
               fontWeight: 'bold',
             },
+            cardStyle: { backgroundColor: '#171717' },
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         >
           <Stack.Screen
