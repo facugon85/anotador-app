@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.js": "/anotador-app/static/js/main.2dd6d923.js",
+    "static/js/806.54426f08.js": "/anotador-app/static/js/806.54426f08.js",
+    "index.html": "/anotador-app/index.html",
+    "serve.json": "/anotador-app/serve.json",
+    "manifest.json": "/anotador-app/manifest.json",
+    "main.2dd6d923.js.map": "/anotador-app/static/js/main.2dd6d923.js.map",
+    "806.54426f08.js.map": "/anotador-app/static/js/806.54426f08.js.map"
+  },
+  "entrypoints": [
+    "static/js/806.54426f08.js",
+    "static/js/main.2dd6d923.js"
+  ]
+}

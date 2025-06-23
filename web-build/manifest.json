@@ -1,0 +1,9 @@
+{
+  "background_color": "#1a1a1a",
+  "display": "standalone",
+  "lang": "en",
+  "name": "Anotador",
+  "short_name": "Anotador",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait"
+}
