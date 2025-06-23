@@ -92,7 +92,7 @@ export default function HomeScreen({ navigation }) {
                 Cufa
             </Text>
         </Text>
-        <Text style={styles.versionText}>v1.2.0</Text>
+        <Text style={styles.versionText}>v1.2.1</Text>
       </View>
 
       <RoadmapModal 
