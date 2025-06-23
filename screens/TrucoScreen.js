@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   StatusBar,
   StyleSheet,
   Platform,
+  Modal,
+  Animated,
 } from 'react-native';
 import { useGameStore } from '../store/gameStore';
 import PlayerCard from '../components/PlayerCard';
@@ -16,6 +18,7 @@ import ScoreButton from '../components/ScoreButton';
 import ScoringModal from '../components/ScoringModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { Undo2, RefreshCw, Settings, Shield, Zap, Plus, X } from 'lucide-react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 export default function TrucoScreen() {
   const {
@@ -33,6 +36,10 @@ export default function TrucoScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedTeamIndex, setSelectedTeamIndex] = useState(null);
   const [isResetModalVisible, setResetModalVisible] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const confettiAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     setTeamNames([...trucoTeams]);
@@ -52,6 +59,8 @@ export default function TrucoScreen() {
   
   useEffect(() => {
     if (winner) {
+      setModalVisible(false);
+      showConfettiAnimation();
       Alert.alert('¡Fin del Juego!', `¡${winner.name} ha ganado la partida!`, [
         { text: 'Nueva Partida', onPress: () => setResetModalVisible(true), style: 'destructive' },
         { text: 'OK', style: 'cancel' },
@@ -59,13 +68,70 @@ export default function TrucoScreen() {
     }
   }, [winner]);
 
+  const showConfettiAnimation = () => {
+    setShowConfetti(true);
+    Animated.timing(confettiAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const hideConfettiAnimation = () => {
+    Animated.timing(confettiAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowConfetti(false);
+    });
+  };
+
   const handleReset = () => {
     setResetModalVisible(true);
+    hideConfettiAnimation();
+  };
+
+  const openEditModal = () => {
+    setEditing(true);
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const closeEditModal = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setEditing(false);
+    });
   };
 
   const handleSave = () => {
-    setTrucoTeams(teamNames);
-    setEditing(false);
+    if (teamNames[0].trim() && teamNames[1].trim()) {
+      setTeamNames(teamNames);
+      closeEditModal();
+    } else {
+      Alert.alert('Error', 'Los nombres de los equipos no pueden estar vacíos');
+    }
   };
 
   const handleOpenModal = (index) => {
@@ -89,40 +155,79 @@ export default function TrucoScreen() {
   ].map(btn => ({ ...btn, disabled: !!winner })) : [];
 
   const EditPanel = () => (
-    <View style={styles.editPanel}>
-      <View style={styles.editHeader}>
-        <Text style={styles.editTitle}>Editar Equipos</Text>
-        <TouchableOpacity onPress={() => setEditing(false)} style={styles.closeButton}>
-          <X size={30} color="white" />
-        </TouchableOpacity>
-      </View>
-      
-      <ScrollView>
-        {teamNames.map((name, index) => (
-          <View key={index} style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>{index === 0 ? 'Nosotros' : 'Ellos'}</Text>
-            <TextInput
-              style={styles.textInput}
-              value={name}
-              onChangeText={(text) => {
-                const newNames = [...teamNames];
-                newNames[index] = text;
-                setTeamNames(newNames);
-              }}
-              placeholderTextColor="#999"
-            />
+    <Modal
+      visible={editing}
+      transparent={true}
+      onRequestClose={closeEditModal}
+    >
+      <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
+        <Animated.View style={[
+          styles.modalContent,
+          {
+            transform: [{
+              translateY: slideAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [300, 0],
+              })
+            }]
+          }
+        ]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Editar Equipos</Text>
+            <TouchableOpacity onPress={closeEditModal} style={styles.closeButton}>
+              <X size={24} color="#84cc16" />
+            </TouchableOpacity>
           </View>
-        ))}
-        <ScoreButton label="Guardar Cambios" onPress={handleSave} style={styles.saveButton} />
-      </ScrollView>
-    </View>
+          <ScrollView style={styles.modalList}>
+            {teamNames.map((name, index) => (
+              <View key={index} style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>{index === 0 ? 'Nosotros' : 'Ellos'}</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={name}
+                  onChangeText={(text) => {
+                    const newNames = [...teamNames];
+                    newNames[index] = text;
+                    setTeamNames(newNames);
+                  }}
+                  placeholderTextColor="#999"
+                />
+              </View>
+            ))}
+            <ScoreButton label="Guardar Cambios" onPress={handleSave} style={styles.saveButton} />
+          </ScrollView>
+        </Animated.View>
+      </Animated.View>
+    </Modal>
   );
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-
-      {editing && <EditPanel />}
+      {showConfetti && !isModalVisible && (
+        <Animated.View 
+          style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            zIndex: 999,
+            opacity: confettiAnim
+          }} 
+          pointerEvents="box-none"
+        >
+          <ConfettiCannon
+            count={200}
+            origin={{ x: 0, y: 0 }}
+            explosionSpeed={500}
+            fallSpeed={4000}
+            fadeOut={true}
+            onAnimationEnd={hideConfettiAnimation}
+          />
+        </Animated.View>
+      )}
+      <EditPanel />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
@@ -130,7 +235,7 @@ export default function TrucoScreen() {
             <Text style={styles.title}>Truco</Text>
             <Text style={styles.subtitle}>A {MAX_SCORE} puntos</Text>
           </View>
-          <TouchableOpacity onPress={() => setEditing(true)} style={styles.settingsButton}>
+          <TouchableOpacity onPress={openEditModal} style={styles.settingsButton}>
             <Settings size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -270,5 +375,34 @@ const styles = StyleSheet.create({
   bottomButton: {
     flex: 1,
     marginHorizontal: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#171717',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '70%',
+    marginTop: 'auto',
+    marginBottom: 50,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+  },
+  modalTitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  modalList: {
+    padding: 24,
   },
 }); 

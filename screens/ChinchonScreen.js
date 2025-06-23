@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   StatusBar,
   StyleSheet,
   Platform,
+  Modal,
+  Animated,
 } from 'react-native';
 import { useChinchonStore } from '../store/chinchonStore';
 import PlayerCard from '../components/PlayerCard';
@@ -16,6 +18,7 @@ import ScoreButton from '../components/ScoreButton';
 import ScoringModal from '../components/ScoringModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { Undo2, RefreshCw, Settings, UserPlus, Minus, Sparkles, X } from 'lucide-react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 export default function ChinchonScreen() {
   const {
@@ -39,6 +42,10 @@ export default function ChinchonScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [isResetModalVisible, setResetModalVisible] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const confettiAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     cargarDesdeStorage();
@@ -57,40 +64,83 @@ export default function ChinchonScreen() {
     };
   }, [jugadores]);
 
+  const winner = jugadores.find(jugador => jugador.puntos >= limitePuntos);
+  
   useEffect(() => {
-    if (ganador && ganador.length > 0) {
-      const primerGanador = ganador[0];
-      const esChinchon = primerGanador.chinchon;
-      const titulo = esChinchon ? '¡CHINCHÓN!' : '¡Fin del Juego!';
-      let mensaje;
-
-      if (esChinchon) {
-        mensaje = `¡${primerGanador.nombre} ha ganado con Chinchón!`;
-      } else if (ganador.length > 1) {
-        const nombresGanadores = ganador.map(g => g.nombre).join(' y ');
-        mensaje = `¡Empate entre ${nombresGanadores} con ${primerGanador.puntos} puntos!`;
-      } else {
-        mensaje = `¡${primerGanador.nombre} gana con ${primerGanador.puntos} puntos!`;
-      }
-
-      Alert.alert(titulo, mensaje, [
+    if (winner) {
+      setModalVisible(false);
+      showConfettiAnimation();
+      Alert.alert('¡Fin del Juego!', `¡${winner.nombre} ha perdido la partida!`, [
         { text: 'Nueva Partida', onPress: () => setResetModalVisible(true), style: 'destructive' },
         { text: 'OK', style: 'cancel' },
       ]);
     }
-  }, [ganador]);
+  }, [winner]);
+
+  const showConfettiAnimation = () => {
+    setShowConfetti(true);
+    Animated.timing(confettiAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const hideConfettiAnimation = () => {
+    Animated.timing(confettiAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowConfetti(false);
+    });
+  };
 
   const handleReset = () => {
     setResetModalVisible(true);
+    hideConfettiAnimation();
+  };
+
+  const openEditModal = () => {
+    setEditing(true);
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const closeEditModal = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setEditing(false);
+    });
   };
 
   const handleSave = () => {
-    playerNames.forEach((nombre, index) => {
-      if (jugadores[index] && jugadores[index].nombre !== nombre) {
-        cambiarNombreJugador(jugadores[index].id, nombre);
-      }
-    });
-    setEditing(false);
+    if (playerNames.every(name => name.trim())) {
+      setPlayerNames(playerNames);
+      closeEditModal();
+    } else {
+      Alert.alert('Error', 'Todos los nombres de jugadores deben estar completos');
+    }
   };
 
   const handleOpenModal = (player) => {
@@ -111,70 +161,109 @@ export default function ChinchonScreen() {
   ].map(btn => ({ ...btn, disabled: !!ganador?.length })) : [];
 
   const EditPanel = () => (
-    <View style={styles.editPanel}>
-      <View style={styles.editHeader}>
-        <Text style={styles.editTitle}>Editar Partida</Text>
-        <TouchableOpacity onPress={() => setEditing(false)} style={styles.closeButton}>
-          <X size={30} color="white" />
-        </TouchableOpacity>
-      </View>
-      
-      <ScrollView>
-        <Text style={styles.sectionTitle}>Jugadores</Text>
-        {playerNames.map((name, index) => (
-          <View key={jugadores[index].id} style={styles.playerInputRow}>
-            <TextInput
-              style={styles.playerInput}
-              value={name}
-              onChangeText={(text) => {
-                const newNames = [...playerNames];
-                newNames[index] = text;
-                setPlayerNames(newNames);
-              }}
-              placeholderTextColor="#999"
-            />
-            <TouchableOpacity onPress={() => eliminarJugador(jugadores[index].id)} disabled={jugadores.length <= 2}>
-              <Minus size={28} color={jugadores.length <= 2 ? "#52525b" : "#ef4444"} />
+    <Modal
+      visible={editing}
+      transparent={true}
+      onRequestClose={closeEditModal}
+    >
+      <Animated.View style={[styles.modalOverlay, { opacity: fadeAnim }]}>
+        <Animated.View style={[
+          styles.modalContent,
+          {
+            transform: [{
+              translateY: slideAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [300, 0],
+              })
+            }]
+          }
+        ]}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Editar Partida</Text>
+            <TouchableOpacity onPress={closeEditModal} style={styles.closeButton}>
+              <X size={24} color="#84cc16" />
             </TouchableOpacity>
           </View>
-        ))}
-        <ScoreButton
-          label="Agregar Jugador"
-          onPress={agregarJugador}
-          icon={<UserPlus size={20} color="white"/>}
-          variant="secondary"
-          disabled={jugadores.length >= 6}
-          style={styles.addPlayerButton}
-        />
-        
-        <Text style={styles.sectionTitle}>Límite de Puntos</Text>
-        <View style={styles.limiteContainer}>
-          {[100, 150, 200].map((limite) => (
-            <TouchableOpacity
-              key={limite}
-              style={[
-                styles.limiteButton,
-                limitePuntos === limite && styles.limiteButtonActive
-              ]}
-              onPress={() => cambiarLimite(limite)}
-            >
-              <Text style={[
-                styles.limiteButtonText,
-                limitePuntos === limite && styles.limiteButtonTextActive
-              ]}>{limite}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <ScoreButton label="Guardar Cambios" onPress={handleSave} />
-      </ScrollView>
-    </View>
+          <ScrollView style={styles.modalList}>
+            <Text style={styles.sectionTitle}>Jugadores</Text>
+            {playerNames.map((name, index) => (
+              <View key={jugadores[index].id} style={styles.playerInputRow}>
+                <TextInput
+                  style={styles.playerInput}
+                  value={name}
+                  onChangeText={(text) => {
+                    const newNames = [...playerNames];
+                    newNames[index] = text;
+                    setPlayerNames(newNames);
+                  }}
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity onPress={() => eliminarJugador(jugadores[index].id)} disabled={jugadores.length <= 2}>
+                  <Minus size={28} color={jugadores.length <= 2 ? "#52525b" : "#ef4444"} />
+                </TouchableOpacity>
+              </View>
+            ))}
+            <ScoreButton
+              label="Agregar Jugador"
+              onPress={agregarJugador}
+              icon={<UserPlus size={20} color="white"/>}
+              variant="secondary"
+              disabled={jugadores.length >= 6}
+              style={styles.addPlayerButton}
+            />
+            <Text style={styles.sectionTitle}>Límite de Puntos</Text>
+            <View style={styles.limiteContainer}>
+              {[100, 150, 200].map((limite) => (
+                <TouchableOpacity
+                  key={limite}
+                  style={[
+                    styles.limiteButton,
+                    limitePuntos === limite && styles.limiteButtonActive
+                  ]}
+                  onPress={() => cambiarLimite(limite)}
+                >
+                  <Text style={[
+                    styles.limiteButtonText,
+                    limitePuntos === limite && styles.limiteButtonTextActive
+                  ]}>{limite}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <ScoreButton label="Guardar Cambios" onPress={handleSave} />
+          </ScrollView>
+        </Animated.View>
+      </Animated.View>
+    </Modal>
   );
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
+      {showConfetti && !isModalVisible && (
+        <Animated.View 
+          style={{ 
+            position: 'absolute', 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            zIndex: 999,
+            opacity: confettiAnim
+          }} 
+          pointerEvents="box-none"
+        >
+          <ConfettiCannon
+            count={200}
+            origin={{ x: 0, y: 0 }}
+            explosionSpeed={500}
+            fallSpeed={4000}
+            fadeOut={true}
+            onAnimationEnd={hideConfettiAnimation}
+          />
+        </Animated.View>
+      )}
       
-      {editing && <EditPanel />}
+      <EditPanel />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
@@ -182,7 +271,7 @@ export default function ChinchonScreen() {
             <Text style={styles.title}>Chinchón</Text>
             <Text style={styles.subtitle}>Límite: {limitePuntos}</Text>
           </View>
-          <TouchableOpacity onPress={() => setEditing(true)} style={styles.settingsButton}>
+          <TouchableOpacity onPress={openEditModal} style={styles.settingsButton}>
             <Settings size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -351,5 +440,34 @@ const styles = StyleSheet.create({
   bottomButton: {
     flex: 1,
     marginHorizontal: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#171717',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: '70%',
+    marginTop: 'auto',
+    marginBottom: 50,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#262626',
+  },
+  modalTitle: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  modalList: {
+    padding: 24,
   },
 }); 

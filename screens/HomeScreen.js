@@ -92,6 +92,7 @@ export default function HomeScreen({ navigation }) {
                 Cufa
             </Text>
         </Text>
+        <Text style={styles.versionText}>v1.2.0</Text>
       </View>
 
       <RoadmapModal 
@@ -208,12 +209,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins, sans-serif', // This will work on web
   },
   footerSignature: {
-    marginTop: 25,
-    fontSize: 14,
     color: '#a3a3a3',
+    fontSize: 14,
+    marginTop: 24,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   cufaLink: {
     color: '#84cc16',
     fontWeight: 'bold',
+  },
+  versionText: {
+    color: '#52525b',
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 8,
   },
 }); 
