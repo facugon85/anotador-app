@@ -1,6 +1,81 @@
 # Anotador 🃏
 
-Una aplicación móvil para llevar el control de puntos en juegos de cartas clásicos: **Escoba de 15** y **Truco**.
+Una aplicación móvil y web para llevar el control de puntos en juegos de cartas clásicos: **Truco**, **Chinchón** y **Escoba de 15**. Pensada para ser rápida, visual, fácil de usar y con soporte para múltiples plataformas.
+
+---
+
+## 🚀 ¿Qué es Anotador?
+
+Anotador es una app para anotar partidas de Truco, Chinchón y Escoba de 15, con interfaz moderna, animaciones, indicadores visuales y soporte para compartir y guardar partidas. Ideal para reuniones con amigos y familia.
+
+---
+
+## 📲 ¿Cómo usar?
+
+1. **Descarga o abre la app web:**
+   - [Versión web (GitHub Pages)](https://facugon85.github.io/anotador-app/)
+   - O clona el repo y ejecuta `npm install && npm run web` para desarrollo local.
+2. **Selecciona un juego** en la pantalla principal.
+3. **Agrega los jugadores/equipos** y comienza a sumar puntos.
+4. **Usa los botones de deshacer y reiniciar** para controlar la partida.
+5. **¡Disfruta las animaciones y el confetti cuando alguien gana!**
+
+---
+
+## ✨ Features principales
+
+- Soporte para Truco, Chinchón y Escoba de 15
+- Animaciones de confetti al ganar
+- Indicadores visuales de peligro y victoria
+- Modal de edición de equipos/jugadores en cada juego
+- Responsive: funciona en móvil y web
+- Temas oscuros y colores llamativos
+- Roadmap y feedback visible para usuarios
+
+---
+
+## 🛣️ Roadmap (lo que se viene)
+
+- Cuentas de usuario (guardar progreso y estadísticas en la nube)
+- Versión PWA (instalable desde el navegador)
+- App nativa para iOS y Android
+- Nuevos juegos: Póker, Burako
+- Estadísticas avanzadas y gráficos
+- Temas personalizables
+
+---
+
+## 📝 Bitácora de cambios
+
+### v1.2.0 (2024-06-XX)
+- Animación de confetti para todos los juegos
+- Barra de progreso dinámica en Chinchón (verde → amarillo → naranja → rojo)
+- Icono de calavera para el perdedor
+- Modal de edición de equipos/jugadores mejorado
+- Número de versión visible en pantalla principal
+- Mejoras visuales y de UX en navegación y transiciones
+- Roadmap y mensaje de apoyo en el modal
+
+### v1.1.0 (2024-05-XX)
+- Nuevo juego: Escoba de 15
+- Mejoras en la edición de equipos
+- Indicadores visuales para el líder y el último
+- Corrección de bugs menores
+
+### v1.0.0 (2024-05-XX)
+- Lanzamiento inicial
+- Soporte para Truco y Chinchón
+- Animaciones básicas
+- Modal de edición de equipos
+- Diseño oscuro y responsive
+
+---
+
+## 👨‍💻 Autor
+
+Hecho con ❤️ por [Cufa](https://facugon85.github.io/dev_cv/#)
+
+¿Ideas, sugerencias o bugs? ¡Abrí un issue o contactame!
 
 ## 🎮 Características
 
