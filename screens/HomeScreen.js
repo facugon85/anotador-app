@@ -68,27 +68,33 @@ export default function HomeScreen({ navigation }) {
             onPress={() => handleGameSelect('Escoba')}
           />
         </View>
-        <View style={styles.bottomContent}>
-          <View style={styles.roadmapCard}>
-            <TouchableOpacity style={styles.roadmapRow} onPress={() => setRoadmapModalVisible(true)}>
-              <Map size={22} color={ICON} style={styles.icon} />
-              <View style={styles.roadmapTextContainer}>
-                <Text style={styles.roadmapTitle}>Roadmap</Text>
-                <Text style={styles.roadmapSubtitle}>Nuevos juegos y mejoras en camino. ¡Mirá nuestro plan!</Text>
-              </View>
-            </TouchableOpacity>
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity 
+          style={styles.roadmapContainer}
+          onPress={() => setRoadmapModalVisible(true)}
+        >
+          <Map size={24} color="#84cc16" />
+          <View style={styles.roadmapTextContainer}>
+            <Text style={styles.roadmapTitle}>Roadmap</Text>
+            <Text style={styles.roadmapSubtitle}>Nuevos juegos y mejoras en camino. ¡Mirá nuestro plan!</Text>
           </View>
-          <TouchableOpacity
-            style={styles.buyMeABeerButton}
-            onPress={() => Linking.openURL('https://www.buymeacoffee.com/cufanic')}
-          >
-            <Text style={styles.buyMeABeerText}>Buy me a beer 🍺</Text>
-          </TouchableOpacity>
-          <Text style={styles.footerSignature}>
-            Hecho con <Text style={{color:'#ff3d5a'}}>❤️</Text> por <Text style={styles.cufaLink} onPress={() => Linking.openURL('https://facugon85.github.io/dev_cv/#')}>Cufa</Text>
-          </Text>
-          <Text style={styles.versionText}>v1.2.5</Text>
-        </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.buyMeABeerButton}
+          onPress={() => Linking.openURL('https://www.buymeacoffee.com/cufanic')}
+        >
+          <Text style={styles.buyMeABeerText}>Buy me a beer 🍺</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.footerSignature}>
+            Hecho con ❤️ por{' '}
+            <Text style={styles.cufaLink} onPress={() => Linking.openURL('https://facugon85.github.io/dev_cv/#')}>
+                Cufa
+            </Text>
+        </Text>
+        <Text style={styles.versionText}>v1.2.0</Text>
       </View>
       <RoadmapModal isVisible={isRoadmapModalVisible} onClose={() => setRoadmapModalVisible(false)} />
     </View>
