@@ -17,10 +17,13 @@ import PlayerCard from '../components/PlayerCard';
 import ScoreButton from '../components/ScoreButton';
 import ScoringModal from '../components/ScoringModal';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Undo2, RefreshCw, Settings, Trophy, Star, Medal, GitBranch, X } from 'lucide-react-native';
+import { Undo2, RefreshCw, Settings, Trophy, Star, Medal, GitBranch, X, Minus, UserPlus, ArrowLeft } from 'lucide-react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { createStackNavigator } from '@react-navigation/stack';
 
-export default function EscobaScreen() {
+const Stack = createStackNavigator();
+
+export default function EscobaScreen({ navigation }) {
   const {
     escobaScores,
     addEscobaScore,
@@ -28,6 +31,8 @@ export default function EscobaScreen() {
     resetEscobaGame,
     setEscobaPlayers,
     escobaPlayers,
+    addEscobaPlayer,
+    removeEscobaPlayer,
   } = useGameStore();
 
   const [editing, setEditing] = useState(false);
@@ -125,11 +130,11 @@ export default function EscobaScreen() {
   };
 
   const handleSave = () => {
-    if (playerNames[0].trim() && playerNames[1].trim()) {
-      setPlayerNames(playerNames);
+    if (playerNames.every(name => name.trim())) {
+      setEscobaPlayers(playerNames);
       closeEditModal();
     } else {
-      Alert.alert('Error', 'Los nombres de los jugadores no pueden estar vacíos');
+      Alert.alert('Error', 'Todos los nombres de jugadores deben estar completos');
     }
   };
 
@@ -144,11 +149,12 @@ export default function EscobaScreen() {
     : null;
 
   const modalButtons = selectedPlayer ? [
-    { label: 'Escoba', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Trophy size={18} color="white"/> },
-    { label: 'Cartas', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <GitBranch size={18} color="white"/> },
-    { label: 'Oros', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
-    { label: 'Setenta', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
-    { label: '7 de Oro', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Medal size={18} color="white"/> },
+    { label: 'Escoba +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Medal size={18} color="white"/> },
+    { label: 'Cartas +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
+    { label: 'Oros +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
+    { label: 'Setenta +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
+    { label: '7 de Oro +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
+    { label: 'Descontar -1', onPress: () => addEscobaScore(selectedPlayer.index, -1), icon: <Minus size={18} color="white"/>, variant: 'danger' },
   ].map(btn => ({ ...btn, disabled: !!winner })) : [];
 
   const EditPanel = () => (
@@ -170,17 +176,17 @@ export default function EscobaScreen() {
           }
         ]}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Editar Jugadores</Text>
+            <Text style={styles.modalTitle}>Ajustes</Text>
             <TouchableOpacity onPress={closeEditModal} style={styles.closeButton}>
-              <X size={24} color="#84cc16" />
+              <X size={24} color="white" />
             </TouchableOpacity>
           </View>
           <ScrollView style={styles.modalList}>
+            <Text style={styles.sectionTitle}>Jugadores</Text>
             {playerNames.map((name, index) => (
-              <View key={index} style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>{index === 0 ? 'Nosotros' : 'Ellos'}</Text>
+              <View key={index} style={styles.playerInputRow}>
                 <TextInput
-                  style={styles.textInput}
+                  style={styles.playerInput}
                   value={name}
                   onChangeText={(text) => {
                     const newNames = [...playerNames];
@@ -189,8 +195,22 @@ export default function EscobaScreen() {
                   }}
                   placeholderTextColor="#999"
                 />
+                <TouchableOpacity onPress={() => removeEscobaPlayer(index)} disabled={escobaPlayers.length <= 2} style={{ marginLeft: 12 }}>
+                  <Minus size={28} color="#ef4444" />
+                </TouchableOpacity>
               </View>
             ))}
+            <ScoreButton
+              label="Agregar Jugador"
+              onPress={() => {
+                addEscobaPlayer();
+                // El useEffect se encargará de actualizar playerNames
+              }}
+              icon={<UserPlus size={20} color="white"/>}
+              variant="secondary"
+              disabled={escobaPlayers.length >= 6}
+              style={styles.addPlayerButton}
+            />
             <ScoreButton label="Guardar Cambios" onPress={handleSave} style={styles.saveButton}/>
           </ScrollView>
         </Animated.View>
@@ -220,6 +240,7 @@ export default function EscobaScreen() {
             explosionSpeed={500}
             fallSpeed={4000}
             fadeOut={true}
+            colors={['#ff3d5a', '#ffe600', '#7bb420', '#00cfff', '#bb86fc', '#fff']}
             onAnimationEnd={hideConfettiAnimation}
           />
         </Animated.View>
@@ -247,6 +268,7 @@ export default function EscobaScreen() {
               isLast={last?.name === player.name && escobaScores.length > 1}
               maxScore={MAX_SCORE}
               onPress={() => handleOpenModal(index)}
+              gameType="escoba"
             />
           ))}
         </View>
@@ -255,7 +277,7 @@ export default function EscobaScreen() {
       {!editing && (
         <View style={styles.bottomBar}>
           <View style={styles.buttonRow}>
-            <ScoreButton label="Deshacer" onPress={undoLastEscobaScore} variant="secondary" icon={<Undo2 size={20} color="white"/>} style={styles.bottomButton} />
+            <ScoreButton label="Volver" onPress={() => navigation.navigate('Home')} variant="black" icon={<ArrowLeft size={20} color="white"/>} style={[styles.bottomButton, { backgroundColor: '#232323' }]} />
             <ScoreButton label="Reiniciar" onPress={handleReset} variant="danger" icon={<RefreshCw size={20} color="white"/>} style={styles.bottomButton} />
           </View>
         </View>
@@ -282,7 +304,7 @@ export default function EscobaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#171717',
+    backgroundColor: '#181818', // Gris oscuro cálido
   },
   scrollContent: {
     paddingBottom: 120,
@@ -296,19 +318,22 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: '#ffffff',
+    color: '#FFFFFF',
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: '900',
     letterSpacing: -1,
   },
   subtitle: {
-    color: '#a3a3a3',
+    color: '#FFFFFF', // Blanco
     fontSize: 20,
+    fontWeight: '700',
   },
   settingsButton: {
-    backgroundColor: '#262626',
-    padding: 12,
+    backgroundColor: '#232323',
+    padding: 18,
     borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   editPanel: {
     position: 'absolute',
@@ -316,7 +341,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#171717',
+    backgroundColor: '#181818', // Gris oscuro cálido
     zIndex: 10,
     padding: 24,
     paddingTop: 48,
@@ -328,9 +353,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   editTitle: {
-    color: '#ffffff',
+    color: '#00FF00', // Verde neón
     fontSize: 30,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   closeButton: {
     padding: 8,
@@ -339,30 +364,55 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   inputLabel: {
-    color: '#d4d4d4',
+    color: '#FFFFFF', // Blanco
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '900',
     marginBottom: 8,
   },
   textInput: {
-    backgroundColor: '#262626',
-    color: '#ffffff',
-    borderRadius: 12,
+    backgroundColor: '#181818',
+    color: '#FFFFFF',
+    borderRadius: 8,
     padding: 16,
     fontSize: 18,
+    borderWidth: 2,
+    borderColor: '#444',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 2,
   },
   saveButton: {
-    marginTop: 16,
+    backgroundColor: '#7bb420',
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 18,
+    borderWidth: 0,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'center',
   },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(23, 23, 23, 0.8)',
+    backgroundColor: '#181818',
     padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#262626',
+    borderTopWidth: 0,
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 4,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -374,16 +424,23 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(24, 24, 24, 0.9)', // Gris oscuro cálido con transparencia
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#171717',
+    backgroundColor: '#181818',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: '70%',
     marginTop: 'auto',
     marginBottom: 50,
+    borderWidth: 2,
+    borderColor: '#444',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 8,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -391,14 +448,82 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#262626',
+    borderBottomColor: '#444',
   },
   modalTitle: {
-    color: '#ffffff',
+    color: '#FFFFFF',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   modalList: {
     padding: 24,
   },
+  rulesButtonContainer: {
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  rulesButton: {
+    width: 220,
+    borderRadius: 0,
+    marginTop: 8,
+    borderWidth: 3,
+    borderColor: '#00FF00', // Verde neón
+  },
+  sectionTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '900',
+    marginBottom: 16,
+  },
+  playerInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  playerInput: {
+    backgroundColor: '#181818',
+    color: '#FFFFFF',
+    borderRadius: 20,
+    padding: 16,
+    fontSize: 18,
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#444',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 2,
+  },
+  addPlayerButton: {
+    backgroundColor: 'transparent',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  addPlayerButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  progressBar: {
+    backgroundColor: '#bbff01',
+    height: 18,
+    borderRadius: 12,
+  },
 });
+
+const StackScreen = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Escoba"
+      component={EscobaScreen}
+      options={{ title: '', headerShown: false }}
+    />
+  </Stack.Navigator>
+);

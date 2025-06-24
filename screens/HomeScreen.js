@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StatusBar, StyleSheet, Linking } from 'react-native';
 import { useGameStore } from '../store/gameStore';
-import { Heart, Users, Trophy, ChevronRight, Beer, Map } from 'lucide-react-native';
+import { Heart, Users, Trophy, ChevronRight, Map } from 'lucide-react-native';
 import RoadmapModal from '../components/RoadmapModal';
 
-const GameCard = ({ icon, title, subtitle, onPress, color }) => (
+const CARD_BG = '#232323';
+const BORDER = '#bbff01';
+const ICON = '#bbff01';
+const TITLE = '#fff';
+const SUBTITLE = '#bdbdbd';
+const BUTTON_YELLOW = '#ffe600';
+const BUTTON_TEXT = '#111';
+const BG = '#181818';
+
+const GameCard = ({ icon, title, subtitle, onPress }) => (
   <TouchableOpacity
     onPress={onPress}
     style={styles.gameCard}
-    activeOpacity={0.8}
+    activeOpacity={0.85}
   >
     <View style={styles.cardContent}>
       {icon}
@@ -17,7 +26,7 @@ const GameCard = ({ icon, title, subtitle, onPress, color }) => (
         <Text style={styles.cardSubtitle}>{subtitle}</Text>
       </View>
     </View>
-    <ChevronRight size={24} color="#84cc16" />
+    <ChevronRight size={24} color={ICON} />
   </TouchableOpacity>
 );
 
@@ -37,68 +46,51 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.title}>
-            Anotador
-          </Text>
-          <Text style={styles.subtitle}>
-            Selecciona un juego
-          </Text>
-        </View>
-
+        <Text style={styles.title}>Anotador</Text>
+        <Text style={styles.subtitle}>Selecciona un juego</Text>
         <View style={styles.gamesContainer}>
           <GameCard
             title="Truco"
-            subtitle="Para 2 o 4 jugadores"
-            icon={<Heart size={32} color="#84cc16" />}
+            subtitle="Para 2, 4 o 6 jugadores"
+            icon={<Heart size={28} color={ICON} style={styles.icon} />}
             onPress={() => handleGameSelect('Truco')}
           />
           <GameCard
             title="Chinchón"
             subtitle="De 2 a 6 jugadores"
-            icon={<Users size={32} color="#84cc16" />}
+            icon={<Users size={28} color={ICON} style={styles.icon} />}
             onPress={() => handleGameSelect('Chinchon')}
           />
           <GameCard
             title="Escoba de 15"
-            subtitle="Para 2 o 4 jugadores"
-            icon={<Trophy size={32} color="#84cc16" />}
+            subtitle="De 2 a 6 jugadores"
+            icon={<Trophy size={28} color={ICON} style={styles.icon} />}
             onPress={() => handleGameSelect('Escoba')}
           />
         </View>
-      </View>
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.roadmapContainer}
-          onPress={() => setRoadmapModalVisible(true)}
-        >
-          <Map size={24} color="#84cc16" />
-          <View style={styles.roadmapTextContainer}>
-            <Text style={styles.roadmapTitle}>Roadmap</Text>
-            <Text style={styles.roadmapSubtitle}>Nuevos juegos y mejoras en camino. ¡Mirá nuestro plan!</Text>
+        <View style={styles.bottomContent}>
+          <View style={styles.roadmapCard}>
+            <TouchableOpacity style={styles.roadmapRow} onPress={() => setRoadmapModalVisible(true)}>
+              <Map size={22} color={ICON} style={styles.icon} />
+              <View style={styles.roadmapTextContainer}>
+                <Text style={styles.roadmapTitle}>Roadmap</Text>
+                <Text style={styles.roadmapSubtitle}>Nuevos juegos y mejoras en camino. ¡Mirá nuestro plan!</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.buyMeABeerButton}
-          onPress={() => Linking.openURL('https://www.buymeacoffee.com/cufanic')}
-        >
-          <Text style={styles.buyMeABeerText}>Buy me a beer 🍺</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.footerSignature}>
-            Hecho con ❤️ por{' '}
-            <Text style={styles.cufaLink} onPress={() => Linking.openURL('https://facugon85.github.io/dev_cv/#')}>
-                Cufa
-            </Text>
-        </Text>
-        <Text style={styles.versionText}>v1.2.0</Text>
+          <TouchableOpacity
+            style={styles.buyMeABeerButton}
+            onPress={() => Linking.openURL('https://www.buymeacoffee.com/cufanic')}
+          >
+            <Text style={styles.buyMeABeerText}>Buy me a beer 🍺</Text>
+          </TouchableOpacity>
+          <Text style={styles.footerSignature}>
+            Hecho con <Text style={{color:'#ff3d5a'}}>❤️</Text> por <Text style={styles.cufaLink} onPress={() => Linking.openURL('https://facugon85.github.io/dev_cv/#')}>Cufa</Text>
+          </Text>
+          <Text style={styles.versionText}>v1.2.5</Text>
+        </View>
       </View>
-
-      <RoadmapModal 
-        isVisible={isRoadmapModalVisible}
-        onClose={() => setRoadmapModalVisible(false)}
-      />
+      <RoadmapModal isVisible={isRoadmapModalVisible} onClose={() => setRoadmapModalVisible(false)} />
     </View>
   );
 }
@@ -106,123 +98,138 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#171717',
+    backgroundColor: BG,
+    paddingHorizontal: 16,
+    paddingTop: 32,
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  header: {
     alignItems: 'center',
-    marginBottom: 32,
+    justifyContent: 'flex-start',
   },
   title: {
-    color: '#ffffff',
-    fontSize: 48,
+    color: TITLE,
+    fontSize: 44,
     fontWeight: 'bold',
-    letterSpacing: -1,
+    textAlign: 'center',
+    marginBottom: 8,
   },
   subtitle: {
-    color: '#a3a3a3',
+    color: SUBTITLE,
     fontSize: 20,
-    marginTop: 8,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 36,
   },
   gamesContainer: {
-    gap: 20,
+    width: '100%',
+    marginBottom: 18,
   },
   gameCard: {
-    backgroundColor: '#262626',
-    borderWidth: 2,
-    borderColor: '#84cc16',
+    backgroundColor: CARD_BG,
+    borderWidth: 2.5,
+    borderColor: BORDER,
     borderRadius: 16,
-    padding: 24,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 16,
   },
   cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   cardText: {
-    marginLeft: 20,
+    marginLeft: 16,
+    flex: 1,
   },
   cardTitle: {
-    color: '#ffffff',
-    fontSize: 20,
+    color: TITLE,
+    fontSize: 22,
     fontWeight: 'bold',
+    marginBottom: 2,
   },
   cardSubtitle: {
-    color: '#a3a3a3',
-    fontSize: 16,
+    color: BORDER,
+    fontSize: 15,
+    fontWeight: '600',
   },
-  footer: {
-    alignItems: 'center',
-    paddingBottom: 40,
-    paddingHorizontal: 24,
+  icon: {
+    marginRight: 4,
   },
-  roadmapContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#262626',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
+  roadmapCard: {
     width: '100%',
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#84cc16',
+    backgroundColor: CARD_BG,
+    borderWidth: 2.5,
+    borderColor: BORDER,
+    borderRadius: 16,
+    marginBottom: 18,
+    padding: 14,
+  },
+  roadmapRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   roadmapTextContainer: {
-    marginLeft: 15,
+    marginLeft: 12,
     flex: 1,
   },
   roadmapTitle: {
-    color: '#ffffff',
-    fontSize: 18,
+    color: TITLE,
+    fontSize: 17,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   roadmapSubtitle: {
-    color: '#a3a3a3',
-    fontSize: 14,
-    lineHeight: 20,
+    color: BORDER,
+    fontSize: 13,
+    fontWeight: '600',
   },
   buyMeABeerButton: {
-    backgroundColor: '#FFDD00',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    backgroundColor: BUTTON_YELLOW,
     borderRadius: 16,
-    flexDirection: 'row',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#FFDD00',
+    marginTop: 8,
+    marginBottom: 18,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 3,
   },
   buyMeABeerText: {
-    color: '#000000',
-    fontSize: 18,
+    color: BUTTON_TEXT,
     fontWeight: 'bold',
-    fontFamily: 'Poppins, sans-serif', // This will work on web
+    fontSize: 20,
   },
   footerSignature: {
-    color: '#a3a3a3',
-    fontSize: 14,
-    marginTop: 24,
-    marginBottom: 8,
+    color: SUBTITLE,
+    fontSize: 15,
+    marginTop: 12,
     textAlign: 'center',
-  },
-  cufaLink: {
-    color: '#84cc16',
     fontWeight: 'bold',
   },
+  cufaLink: {
+    color: BORDER,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
   versionText: {
-    color: '#52525b',
+    color: SUBTITLE,
     fontSize: 13,
     textAlign: 'center',
-    marginBottom: 8,
+    marginTop: 2,
+    fontWeight: 'bold',
+  },
+  bottomContent: {
+    width: '100%',
+    marginTop: 'auto',
+    alignItems: 'center',
+    marginBottom: 16,
   },
 }); 

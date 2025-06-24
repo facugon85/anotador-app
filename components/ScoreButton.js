@@ -5,7 +5,7 @@ export default function ScoreButton({
   label,
   onPress,
   icon,
-  variant = 'primary', // 'primary', 'secondary', 'danger'
+  variant = 'default', // 'default', 'danger', 'black', 'lime'
   style = {},
   disabled = false,
 }) {
@@ -16,7 +16,11 @@ export default function ScoreButton({
   };
 
   const getTextStyle = () => {
-    return [styles.text, styles[`${variant}Text`]];
+    let styleArr = [styles.text, styles[`${variant}Text`]];
+    if (variant === 'secondary') {
+      styleArr.push({ color: '#fff' });
+    }
+    return styleArr;
   };
 
   return (
@@ -40,17 +44,23 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 16,
+    borderWidth: 2,
   },
-  primary: {
-    backgroundColor: 'rgba(132, 204, 22, 0.8)',
-  },
-  secondary: {
-    backgroundColor: '#262626',
-    borderWidth: 1,
-    borderColor: '#404040',
+  default: {
+    backgroundColor: '#232323',
+    borderColor: '#444',
   },
   danger: {
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    backgroundColor: '#d32f2f',
+    borderColor: '#d32f2f',
+  },
+  black: {
+    backgroundColor: '#181818',
+    borderColor: '#111',
+  },
+  lime: {
+    backgroundColor: '#181818',
+    borderColor: '#bbff01',
   },
   disabled: {
     opacity: 0.4,
@@ -58,18 +68,24 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginLeft: 8,
   },
-  primaryText: {
-    color: '#ffffff',
-  },
-  secondaryText: {
-    color: '#ffffff',
-    fontWeight: '600',
+  defaultText: {
+    color: '#fff',
   },
   dangerText: {
-    color: '#ffffff',
+    color: '#fff',
+  },
+  blackText: {
+    color: '#fff',
+  },
+  limeText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
   iconContainer: {
-    marginRight: 12,
+    marginRight: 8,
+    marginBottom: 0,
   },
 }); 
