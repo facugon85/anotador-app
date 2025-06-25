@@ -11,34 +11,40 @@ import ChinchonScreen from './screens/ChinchonScreen';
 
 const Stack = createStackNavigator();
 
-const MyTheme = {
-  ...DarkTheme,
+const theme = {
+  dark: true,
   colors: {
-    ...DarkTheme.colors,
-    background: '#171717',
-    card: '#171717',
+    primary: '#00FF01', // Verde neón
+    background: '#302f2c', // Gris oscuro cálido
+    card: '#302f2c', // Gris oscuro cálido
+    text: '#FFFFFF', // Blanco
+    border: '#00FF00', // Verde neón
+    notification: '#FF0000', // Rojo neón
   },
 };
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={MyTheme}>
+      <NavigationContainer theme={theme}>
         <Stack.Navigator
           initialRouteName="Home"
           screenOptions={{
             headerStyle: {
-              backgroundColor: '#171717',
-              borderBottomWidth: 0,
-              elevation: 0,
-              shadowOpacity: 0,
+              backgroundColor: '#181818', // Azul grisáceo sobrio
+              elevation: 0, // Quita la sombra en Android
+              shadowOpacity: 0, // Quita la sombra en iOS
+              borderBottomWidth: 0, // Quita la línea blanca
             },
-            headerTintColor: '#84cc16',
+            headerTintColor: '#bbff01', // Gris claro elegante
             headerTitleStyle: {
-              color: '#ffffff',
-              fontWeight: 'bold',
+              color: '#ECF0F1',
+              fontWeight: '900',
+              textShadowColor: '#000000',
+              textShadowOffset: { width: 2, height: 2 },
+              textShadowRadius: 0,
             },
-            cardStyle: { backgroundColor: '#171717' },
+            cardStyle: { backgroundColor: '#2C3E50' },
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
         >
@@ -50,17 +56,17 @@ export default function App() {
           <Stack.Screen
             name="Truco"
             component={TrucoScreen}
-            options={{ title: '' }}
+            options={{ title: '', headerShown: false }}
           />
           <Stack.Screen
             name="Chinchon"
             component={ChinchonScreen}
-            options={{ title: '' }}
+            options={{ title: '', headerShown: false }}
           />
           <Stack.Screen
             name="Escoba"
             component={EscobaScreen}
-            options={{ title: '' }}
+            options={{ title: '', headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>

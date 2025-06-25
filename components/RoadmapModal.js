@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, ScrollView, StyleSheet, Linking } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, ScrollView, StyleSheet, Linking, Dimensions } from 'react-native';
 import { X, CheckCircle, Clock, Star, Heart, Smartphone, UserCircle } from 'lucide-react-native';
 
 const RoadmapItem = ({ title, description, status, icon }) => (
@@ -7,10 +7,8 @@ const RoadmapItem = ({ title, description, status, icon }) => (
     <View style={styles.roadmapItemHeader}>
       {icon}
       <Text style={styles.roadmapItemTitle}>{title}</Text>
-      <View style={[styles.statusBadge, status === 'completed' ? styles.completedBadge : styles.pendingBadge]}>
-        <Text style={styles.statusText}>
-          {status === 'completed' ? 'Completado' : 'En desarrollo'}
-        </Text>
+      <View style={[styles.statusBadge, status === 'completed' ? styles.completedBadge : status === 'pending' ? styles.pendingBadge : null]}>
+        <Text style={styles.statusText}>{status === 'completed' ? 'Listo' : 'Próximamente'}</Text>
       </View>
     </View>
     <Text style={styles.roadmapItemDescription}>{description}</Text>
@@ -90,24 +88,22 @@ const RoadmapModal = ({ isVisible, onClose }) => {
   return (
     <Modal
       visible={isVisible}
-      animationType="slide"
       transparent={true}
       onRequestClose={onClose}
+      animationType="slide"
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Roadmap</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <X size={24} color="#84cc16" />
             </TouchableOpacity>
           </View>
-          
           <ScrollView style={styles.roadmapList} showsVerticalScrollIndicator={false}>
             <Text style={styles.roadmapSubtitle}>
               Nuevos juegos y mejoras que estamos desarrollando
             </Text>
-            
             {roadmapItems.map((item, index) => (
               <RoadmapItem
                 key={index}
@@ -117,7 +113,6 @@ const RoadmapModal = ({ isVisible, onClose }) => {
                 icon={item.icon}
               />
             ))}
-            
             <View style={styles.footerNote}>
               <Heart size={24} color="#ef4444" style={{ marginBottom: 12 }} />
               <Text style={styles.footerNoteText}>
@@ -136,48 +131,71 @@ const RoadmapModal = ({ isVisible, onClose }) => {
   );
 };
 
+const MODAL_BG = '#181818';
+const CARD_BG = '#232323';
+const BORDER = '#bbff01';
+const ICON = '#bbff01';
+const TITLE = '#fff';
+const SUBTITLE = '#bdbdbd';
+
 const styles = StyleSheet.create({
-  modalOverlay: {
+  overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(24, 24, 24, 0.96)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  modalContent: {
-    backgroundColor: '#171717',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '80%',
+  modalContainer: {
+    width: Dimensions.get('window').width * 0.92,
+    maxHeight: Dimensions.get('window').height * 0.88,
+    backgroundColor: MODAL_BG,
+    borderRadius: 16,
+    padding: 18,
+    borderWidth: 2.5,
+    borderColor: BORDER,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 3,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: '#262626',
+    marginBottom: 10,
   },
   modalTitle: {
-    color: '#ffffff',
+    color: TITLE,
     fontSize: 24,
     fontWeight: 'bold',
   },
   closeButton: {
-    padding: 4,
+    padding: 8,
+    borderWidth: 2,
+    borderColor: BORDER,
+    borderRadius: 16,
+    backgroundColor: CARD_BG,
   },
   roadmapList: {
-    padding: 24,
+    padding: 0,
+    marginTop: 8,
   },
   roadmapSubtitle: {
-    color: '#a3a3a3',
+    color: SUBTITLE,
     fontSize: 16,
-    marginBottom: 24,
+    marginBottom: 18,
     lineHeight: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   roadmapItem: {
-    backgroundColor: '#262626',
-    borderRadius: 12,
+    backgroundColor: CARD_BG,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: BORDER,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   roadmapItemHeader: {
     flexDirection: 'row',
@@ -185,7 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   roadmapItemTitle: {
-    color: '#ffffff',
+    color: TITLE,
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 8,
@@ -195,43 +213,45 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
+    backgroundColor: '#232323',
+    borderWidth: 1.5,
+    borderColor: BORDER,
   },
   completedBadge: {
-    backgroundColor: '#84cc16',
+    backgroundColor: '#232323',
   },
   pendingBadge: {
-    backgroundColor: '#fbbf24',
+    backgroundColor: '#232323',
   },
   statusText: {
-    color: '#000000',
-    fontSize: 12,
+    color: BORDER,
     fontWeight: 'bold',
+    fontSize: 12,
   },
   roadmapItemDescription: {
-    color: '#a3a3a3',
+    color: SUBTITLE,
     fontSize: 14,
-    lineHeight: 20,
+    fontWeight: '600',
+    marginLeft: 28,
   },
   footerNote: {
-    marginTop: 16,
-    padding: 20,
-    backgroundColor: '#262626',
-    borderRadius: 12,
     alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 8,
   },
   footerNoteText: {
-    color: '#a3a3a3',
-    fontSize: 14,
+    color: SUBTITLE,
+    fontSize: 13,
     textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: 8,
+    fontWeight: 'bold',
   },
   supportLink: {
-    color: '#84cc16',
-    fontSize: 14,
+    color: BORDER,
     fontWeight: 'bold',
     textAlign: 'center',
     textDecorationLine: 'underline',
+    fontSize: 14,
   },
 });
 

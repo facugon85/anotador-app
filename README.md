@@ -64,6 +64,16 @@ Una aplicación moderna y elegante para llevar el puntaje de tus juegos de carta
 
 ## 📋 Bitácora de Cambios
 
+### **v1.3.0** - 2024-12-19
+- 🎨 **Confeti bicolor**: Implementación de confeti con 2 colores verdes diferentes (#84cc16 y #22c55e) para mayor variedad visual
+- 🎮 **Truco multijugador**: Configuración para 2, 4 y 6 jugadores (lógica de juego mantenida)
+- 🎯 **Selector de jugadores**: Interfaz para cambiar entre 2, 4 o 6 jugadores en Truco
+- 🔧 **Persistencia mejorada**: Guardado automático de la configuración de jugadores
+- 📏 **Barras de progreso divididas**: Marcadores visuales en las barras de puntaje para cada juego:
+  - **Truco**: Dos barras separadas (0-15 y 16-30 puntos)
+  - **Chinchón**: Divisiones dinámicas según el límite de puntos
+  - **Escoba**: Divisiones en 5, 10 y 15 puntos
+
 ### **v1.2.1** - 2024-12-19
 - 🎬 **Animaciones de confeti suaves**: Implementación de fade-in/fade-out de 300ms para celebraciones
 - ⚡ **Confeti optimizado**: Velocidad de explosión y caída ajustada para mayor suavidad

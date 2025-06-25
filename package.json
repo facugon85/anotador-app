@@ -1,7 +1,7 @@
 {
   "name": "anotador",
   "homepage": "https://facugon85.github.io/anotador-app",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",

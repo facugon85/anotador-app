@@ -46,15 +46,18 @@ const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
                   icon={button.icon}
                   variant={button.variant}
                   disabled={button.disabled}
-                  className={button.className}
+                  style={{...button.style, ...styles.squareButton}}
                 />
               </View>
             ))}
           </ScrollView>
 
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Cerrar</Text>
-          </TouchableOpacity>
+          <ScoreButton
+            label="Confirmar"
+            onPress={onClose}
+            style={styles.closeButton}
+            variant="lime"
+          />
         </View>
       </TouchableOpacity>
     </Modal>
@@ -64,58 +67,85 @@ const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: 'rgba(24, 24, 24, 0.96)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContainer: {
-    width: Dimensions.get('window').width * 0.9,
-    maxHeight: Dimensions.get('window').height * 0.7,
-    backgroundColor: '#1E2A3A',
-    borderRadius: 20,
-    padding: 25,
+    width: Dimensions.get('window').width * 0.92,
+    maxHeight: Dimensions.get('window').height * 0.88,
+    backgroundColor: '#181818',
+    borderRadius: 24,
+    padding: 22,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: '#444',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 18,
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '900',
     color: '#FFFFFF',
   },
   modalScore: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '900',
+    color: '#ffe600',
   },
   buttonsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    maxWidth: 340,
   },
   buttonWrapper: {
     margin: 8,
+    width: 120,
+    height: 120,
+  },
+  squareButton: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 18,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderWidth: 2,
+    borderColor: '#fff',
+    backgroundColor: '#232323',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 2,
   },
   closeButton: {
-    marginTop: 20,
-    backgroundColor: '#c0392b',
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 30,
+    marginTop: 18,
+    backgroundColor: '#7bb420',
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 36,
+    borderWidth: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   closeButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '900',
   },
 });
 

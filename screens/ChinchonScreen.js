@@ -17,10 +17,13 @@ import PlayerCard from '../components/PlayerCard';
 import ScoreButton from '../components/ScoreButton';
 import ScoringModal from '../components/ScoringModal';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Undo2, RefreshCw, Settings, UserPlus, Minus, Sparkles, X } from 'lucide-react-native';
+import { Undo2, RefreshCw, Settings, UserPlus, Minus, Sparkles, X, ArrowLeft } from 'lucide-react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { createStackNavigator } from '@react-navigation/stack';
 
-export default function ChinchonScreen() {
+const Stack = createStackNavigator();
+
+export default function ChinchonScreen({ navigation }) {
   const {
     jugadores,
     ganador,
@@ -179,18 +182,18 @@ export default function ChinchonScreen() {
           }
         ]}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Editar Partida</Text>
+            <Text style={styles.modalTitle}>Ajustes</Text>
             <TouchableOpacity onPress={closeEditModal} style={styles.closeButton}>
-              <X size={24} color="#84cc16" />
+              <X size={24} color="white" />
             </TouchableOpacity>
           </View>
           <ScrollView style={styles.modalList}>
             <Text style={styles.sectionTitle}>Jugadores</Text>
-            {playerNames.map((name, index) => (
-              <View key={jugadores[index].id} style={styles.playerInputRow}>
+            {jugadores.map((jugador, index) => (
+              <View key={jugador.id} style={styles.playerInputRow}>
                 <TextInput
                   style={styles.playerInput}
-                  value={name}
+                  value={playerNames[index] || ''}
                   onChangeText={(text) => {
                     const newNames = [...playerNames];
                     newNames[index] = text;
@@ -198,8 +201,8 @@ export default function ChinchonScreen() {
                   }}
                   placeholderTextColor="#999"
                 />
-                <TouchableOpacity onPress={() => eliminarJugador(jugadores[index].id)} disabled={jugadores.length <= 2}>
-                  <Minus size={28} color={jugadores.length <= 2 ? "#52525b" : "#ef4444"} />
+                <TouchableOpacity onPress={() => eliminarJugador(jugador.id)} disabled={jugadores.length <= 2} style={[styles.minusCircle, { marginLeft: 12 }]}>
+                  <Minus size={28} color="#ef4444" />
                 </TouchableOpacity>
               </View>
             ))}
@@ -229,7 +232,7 @@ export default function ChinchonScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-            <ScoreButton label="Guardar Cambios" onPress={handleSave} />
+            <ScoreButton label="Guardar Cambios" onPress={handleSave} style={styles.saveButton} />
           </ScrollView>
         </Animated.View>
       </Animated.View>
@@ -258,6 +261,7 @@ export default function ChinchonScreen() {
             explosionSpeed={500}
             fallSpeed={4000}
             fadeOut={true}
+            colors={['#ff3d5a', '#ffe600', '#7bb420', '#00cfff', '#bb86fc', '#fff']}
             onAnimationEnd={hideConfettiAnimation}
           />
         </Animated.View>
@@ -296,7 +300,7 @@ export default function ChinchonScreen() {
       {!editing && (
         <View style={styles.bottomBar}>
           <View style={styles.buttonRow}>
-            <ScoreButton label="Deshacer" onPress={deshacerUltima} variant="secondary" icon={<Undo2 size={20} color="white"/>} style={styles.bottomButton} />
+            <ScoreButton label="Volver" onPress={() => navigation.navigate('Home')} variant="black" icon={<ArrowLeft size={20} color="white"/>} style={[styles.bottomButton, { backgroundColor: '#232323' }]} />
             <ScoreButton label="Reiniciar" onPress={handleReset} variant="danger" icon={<RefreshCw size={20} color="white"/>} style={styles.bottomButton} />
           </View>
         </View>
@@ -323,7 +327,7 @@ export default function ChinchonScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#171717',
+    backgroundColor: '#181818',
   },
   scrollContent: {
     paddingBottom: 120,
@@ -337,19 +341,22 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: '#ffffff',
+    color: '#FFFFFF',
     fontSize: 36,
-    fontWeight: 'bold',
+    fontWeight: '900',
     letterSpacing: -1,
   },
   subtitle: {
-    color: '#a3a3a3',
+    color: '#FFFFFF',
     fontSize: 20,
+    fontWeight: '700',
   },
   settingsButton: {
-    backgroundColor: '#262626',
-    padding: 12,
+    backgroundColor: '#232323',
+    padding: 18,
     borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   editPanel: {
     position: 'absolute',
@@ -377,10 +384,10 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   sectionTitle: {
-    color: '#d4d4d4',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '900',
+    marginBottom: 16,
   },
   playerInputRow: {
     flexDirection: 'row',
@@ -388,16 +395,35 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   playerInput: {
-    flex: 1,
-    backgroundColor: '#262626',
-    color: '#ffffff',
-    borderRadius: 12,
+    backgroundColor: '#181818',
+    color: '#FFFFFF',
+    borderRadius: 20,
     padding: 16,
-    marginRight: 12,
     fontSize: 18,
+    flex: 1,
+    borderWidth: 2,
+    borderColor: '#444',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 2,
   },
   addPlayerButton: {
+    backgroundColor: 'transparent',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
+    marginBottom: 8,
+  },
+  addPlayerButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
   },
   limiteContainer: {
     flexDirection: 'row',
@@ -428,10 +454,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(23, 23, 23, 0.8)',
+    backgroundColor: '#181818',
     padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#262626',
+    borderTopWidth: 0,
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 4,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -443,16 +473,23 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(48, 47, 44, 0.9)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#171717',
+    backgroundColor: '#181818',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: '70%',
     marginTop: 'auto',
     marginBottom: 50,
+    borderWidth: 2,
+    borderColor: '#444',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 8,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -460,14 +497,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#262626',
+    borderBottomColor: '#444',
   },
   modalTitle: {
-    color: '#ffffff',
+    color: '#FFFFFF',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
   modalList: {
     padding: 24,
   },
-}); 
+  progressBar: {
+    backgroundColor: '#bbff01',
+    height: 18,
+    borderRadius: 12,
+  },
+  saveButton: {
+    backgroundColor: '#7bb420',
+    borderRadius: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 18,
+    borderWidth: 0,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  minusCircle: {
+    backgroundColor: '#232323',
+    borderRadius: 50,
+    padding: 8,
+    marginLeft: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+const StackScreen = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Chinchon"
+      component={ChinchonScreen}
+      options={{ title: '', headerShown: false }}
+    />
+  </Stack.Navigator>
+);
+
+export { StackScreen }; 

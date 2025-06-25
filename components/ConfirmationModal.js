@@ -20,7 +20,7 @@ const ConfirmationModal = ({ isVisible, onClose, onConfirm, title, message }) =>
         <View style={styles.modalContainer}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.message}>{message}</Text>
-          <View style={styles.buttonContainer}>
+          <View style={styles.buttonRow}>
             <ScoreButton
               label="Cancelar"
               onPress={onClose}
@@ -46,44 +46,44 @@ const ConfirmationModal = ({ isVisible, onClose, onConfirm, title, message }) =>
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    backgroundColor: 'rgba(24, 24, 24, 0.96)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
   modalContainer: {
-    width: '100%',
-    maxWidth: 400,
-    backgroundColor: '#1E2A3A',
-    borderRadius: 20,
-    padding: 30,
+    width: Dimensions.get('window').width * 0.88,
+    backgroundColor: '#181818',
+    borderRadius: 22,
+    padding: 28,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 10,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 8,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   title: {
-    fontSize: 22,
-    fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 15,
+    fontSize: 24,
+    fontWeight: '900',
+    marginBottom: 16,
     textAlign: 'center',
   },
   message: {
-    fontSize: 16,
-    color: '#d4d4d4',
+    color: '#bdbdbd',
+    fontSize: 17,
+    marginBottom: 28,
     textAlign: 'center',
-    marginBottom: 30,
     lineHeight: 24,
+    fontWeight: '600',
   },
-  buttonContainer: {
+  buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    marginTop: 8,
   },
   button: {
     flex: 1,
