@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StatusBar, StyleSheet, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StatusBar, StyleSheet, Linking, ScrollView } from 'react-native';
 import { useGameStore } from '../store/gameStore';
 import { Heart, Users, Trophy, ChevronRight, Map } from 'lucide-react-native';
 import RoadmapModal from '../components/RoadmapModal';
+import { FadeGradientTop, FadeGradientBottom } from '../components/FadeGradient';
 
 const CARD_BG = '#232323';
 const BORDER = '#bbff01';
@@ -45,50 +46,86 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <View style={styles.content}>
+      <View style={styles.fixedHeader}>
         <Text style={styles.title}>Anotador</Text>
         <Text style={styles.subtitle}>Selecciona un juego</Text>
-        <View style={styles.gamesContainer}>
-          <GameCard
-            title="Truco"
-            subtitle="Para 2, 4 o 6 jugadores"
-            icon={<Heart size={28} color={ICON} style={styles.icon} />}
-            onPress={() => handleGameSelect('Truco')}
-          />
-          <GameCard
-            title="Chinchón"
-            subtitle="De 2 a 6 jugadores"
-            icon={<Users size={28} color={ICON} style={styles.icon} />}
-            onPress={() => handleGameSelect('Chinchon')}
-          />
-          <GameCard
-            title="Escoba de 15"
-            subtitle="De 2 a 6 jugadores"
-            icon={<Trophy size={28} color={ICON} style={styles.icon} />}
-            onPress={() => handleGameSelect('Escoba')}
-          />
-        </View>
-        <View style={styles.bottomContent}>
-          <View style={styles.roadmapCard}>
-            <TouchableOpacity style={styles.roadmapRow} onPress={() => setRoadmapModalVisible(true)}>
-              <Map size={22} color={ICON} style={styles.icon} />
-              <View style={styles.roadmapTextContainer}>
-                <Text style={styles.roadmapTitle}>Roadmap</Text>
-                <Text style={styles.roadmapSubtitle}>Nuevos juegos y mejoras en camino. ¡Mirá nuestro plan!</Text>
+      </View>
+      <FadeGradientTop style={styles.fadeGradient} />
+      <View style={styles.gamesScrollWrapper}>
+        <ScrollView contentContainerStyle={styles.gamesScroll} style={styles.gamesScrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.gamesContainer}>
+            <GameCard
+              title="Truco"
+              subtitle="Para 2, 4 o 6 jugadores"
+              icon={<Heart size={28} color={ICON} style={styles.icon} />}
+              onPress={() => handleGameSelect('Truco')}
+            />
+            <GameCard
+              title="Chinchón"
+              subtitle="De 2 a 6 jugadores"
+              icon={<Users size={28} color={ICON} style={styles.icon} />}
+              onPress={() => handleGameSelect('Chinchon')}
+            />
+            <GameCard
+              title="Escoba de 15"
+              subtitle="De 2 a 6 jugadores"
+              icon={<Trophy size={28} color={ICON} style={styles.icon} />}
+              onPress={() => handleGameSelect('Escoba')}
+            />
+            <View style={[styles.gameCard, styles.disabledCard]}> 
+              <View style={styles.cardContent}>
+                <Trophy size={28} color={ICON} style={styles.icon} />
+                <View style={styles.cardText}>
+                  <Text style={styles.cardTitle}>Generala</Text>
+                  <Text style={styles.cardSubtitle}>Próximamente</Text>
+                </View>
               </View>
-            </TouchableOpacity>
+              <ChevronRight size={24} color={ICON} />
+            </View>
+            <View style={[styles.gameCard, styles.disabledCard]}> 
+              <View style={styles.cardContent}>
+                <Trophy size={28} color={ICON} style={styles.icon} />
+                <View style={styles.cardText}>
+                  <Text style={styles.cardTitle}>Burako</Text>
+                  <Text style={styles.cardSubtitle}>Próximamente</Text>
+                </View>
+              </View>
+              <ChevronRight size={24} color={ICON} />
+            </View>
+            <View style={[styles.gameCard, styles.disabledCard]}> 
+              <View style={styles.cardContent}>
+                <Trophy size={28} color={ICON} style={styles.icon} />
+                <View style={styles.cardText}>
+                  <Text style={styles.cardTitle}>Póker</Text>
+                  <Text style={styles.cardSubtitle}>Próximamente</Text>
+                </View>
+              </View>
+              <ChevronRight size={24} color={ICON} />
+            </View>
           </View>
-          <TouchableOpacity
-            style={styles.buyMeABeerButton}
-            onPress={() => Linking.openURL('https://www.buymeacoffee.com/cufanic')}
-          >
-            <Text style={styles.buyMeABeerText}>Buy me a beer 🍺</Text>
+        </ScrollView>
+        <FadeGradientBottom style={styles.fadeGradient} />
+      </View>
+      <View style={styles.fixedFooter}>
+        <View style={styles.roadmapCard}>
+          <TouchableOpacity style={styles.roadmapRow} onPress={() => setRoadmapModalVisible(true)}>
+            <Map size={22} color={ICON} style={styles.icon} />
+            <View style={styles.roadmapTextContainer}>
+              <Text style={styles.roadmapTitle}>Roadmap</Text>
+              <Text style={styles.roadmapSubtitle}>Nuevos juegos y mejoras en camino. ¡Mirá nuestro plan!</Text>
+            </View>
           </TouchableOpacity>
-          <Text style={styles.footerSignature}>
-            Hecho con <Text style={{color:'#ff3d5a'}}>❤️</Text> por <Text style={styles.cufaLink} onPress={() => Linking.openURL('https://facugon85.github.io/dev_cv/#')}>Cufa</Text>
-          </Text>
-          <Text style={styles.versionText}>v1.3.5</Text>
         </View>
+        <TouchableOpacity
+          style={styles.buyMeABeerButton}
+          onPress={() => Linking.openURL('https://www.buymeacoffee.com/cufanic')}
+        >
+          <Text style={styles.buyMeABeerText}>Buy me a beer 🍺</Text>
+        </TouchableOpacity>
+        <Text style={styles.footerSignature}>
+          Hecho con <Text style={{color:'#ff3d5a'}}>❤️</Text> por <Text style={styles.cufaLink} onPress={() => Linking.openURL('https://facugon85.github.io/dev_cv/#')}>Cufa</Text>
+        </Text>
+        <Text style={styles.versionText}>v1.3.9</Text>
       </View>
       <RoadmapModal isVisible={isRoadmapModalVisible} onClose={() => setRoadmapModalVisible(false)} />
     </View>
@@ -102,10 +139,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 32,
   },
-  content: {
-    flex: 1,
+  fixedHeader: {
+    paddingTop: 8,
+    backgroundColor: BG,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    zIndex: 10,
+    marginBottom: 10,
+  },
+  fixedFooter: {
+    backgroundColor: BG,
+    alignItems: 'center',
+    paddingBottom: 16,
+    paddingTop: 8,
+    zIndex: 10,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    marginTop: 32,
+  },
+  gamesScrollWrapper: {
+    maxHeight: 420, // Más espacio para aire entre header y footer
+    minHeight: 200,
+    width: '100%',
+    alignSelf: 'center',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexGrow: 0,
+    flexShrink: 0,
+    position: 'relative',
+  },
+  gamesScroll: {
+    paddingBottom: 24,
+    alignItems: 'center',
+  },
+  gamesScrollView: {
+    flex: 1,
+    marginVertical: 0,
+  },
+  disabledCard: {
+    opacity: 0.5,
   },
   title: {
     color: TITLE,
@@ -160,12 +233,13 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   roadmapCard: {
-    width: '100%',
+    width: '92%',
+    alignSelf: 'center',
     backgroundColor: CARD_BG,
     borderWidth: 2.5,
     borderColor: BORDER,
     borderRadius: 16,
-    marginBottom: 18,
+    marginBottom: 15,
     padding: 14,
   },
   roadmapRow: {
@@ -226,10 +300,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontWeight: 'bold',
   },
-  bottomContent: {
-    width: '100%',
-    marginTop: 'auto',
-    alignItems: 'center',
-    marginBottom: 16,
+  fadeGradient: {
+    zIndex: 30,
+    pointerEvents: 'none',
   },
 }); 

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import ScoreButton from './ScoreButton';
 
-const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
+const ScoringModal = ({ isVisible, onClose, player, buttons, chinchonButton }) => {
   if (!player) return null;
 
   // Handle both naming conventions (nombre/name and score)
@@ -19,7 +19,6 @@ const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
 
   return (
     <Modal
-      animationType="slide"
       transparent={true}
       visible={isVisible}
       onRequestClose={onClose}
@@ -33,7 +32,7 @@ const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>{playerName}</Text>
             <Text style={[styles.modalScore, { color: player.color || '#bbff01' }]}>
-              {playerScore}
+              {typeof playerScore === 'number' ? playerScore : 0}
             </Text>
           </View>
           
@@ -41,9 +40,16 @@ const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
             {buttons.map((button, index) => (
               <View key={index} style={styles.buttonWrapper}>
                 <ScoreButton
-                  label={button.label}
+                  label={
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                      {button.icon && (
+                        <View style={{ marginBottom: 8 }}>{button.icon}</View>
+                      )}
+                      <Text style={{ color: button.labelStyle?.color || '#fff', fontSize: button.label === '-1 pts' ? 32 : 18, fontWeight: button.labelStyle?.fontWeight || 'bold', textAlign: 'center' }}>{button.label}</Text>
+                    </View>
+                  }
                   onPress={button.onPress}
-                  icon={button.icon}
+                  icon={undefined}
                   variant={button.variant}
                   disabled={button.disabled}
                   style={{...button.style, ...styles.squareButton}}
@@ -51,6 +57,12 @@ const ScoringModal = ({ isVisible, onClose, player, buttons }) => {
               </View>
             ))}
           </ScrollView>
+
+          {chinchonButton && (
+            <ScoreButton
+              {...chinchonButton}
+            />
+          )}
 
           <ScoreButton
             label="Confirmar"
@@ -84,7 +96,7 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     elevation: 8,
     borderWidth: 2,
-    borderColor: '#444',
+    borderColor: '#bbff01',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -107,16 +119,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    alignItems: 'center',
     maxWidth: 340,
   },
   buttonWrapper: {
     margin: 8,
     width: 120,
     height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   squareButton: {
-    width: '100%',
-    height: '100%',
+    width: 120,
+    height: 120,
     borderRadius: 18,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -124,13 +139,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     paddingVertical: 0,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: '#bbff01',
     backgroundColor: '#232323',
     shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0,
     shadowRadius: 0,
     elevation: 2,
+    transitionProperty: 'none',
   },
   closeButton: {
     marginTop: 18,

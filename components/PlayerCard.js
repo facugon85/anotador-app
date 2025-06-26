@@ -49,7 +49,7 @@ const PlayerCard = ({
     return (
       <View style={{ flexDirection: 'row', gap: 16, marginTop: 12 }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: '#bdbdbd', fontSize: 13, fontWeight: 'bold', marginBottom: 2 }}>0 a 15 malas</Text>
+          <Text style={{ color: '#bdbdbd', fontSize: 13, fontWeight: 'bold', marginBottom: 2 }}>Malas</Text>
           <View style={{
             width: '100%',
             height: 14,
@@ -66,7 +66,7 @@ const PlayerCard = ({
           </View>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: '#bdbdbd', fontSize: 13, fontWeight: 'bold', marginBottom: 2 }}>16 a 30 buenas</Text>
+          <Text style={{ color: '#bdbdbd', fontSize: 13, fontWeight: 'bold', marginBottom: 2 }}>Buenas</Text>
           <View style={{
             width: '100%',
             height: 14,
@@ -108,8 +108,9 @@ const PlayerCard = ({
         <Text
           style={[
             styles.score,
-            isWinner && styles.winnerScore,
-            isOverLimit && styles.overLimitScore
+            gameType === 'escoba' && { color: '#bbff01' },
+            gameType !== 'escoba' && isWinner && styles.winnerScore,
+            gameType !== 'escoba' && isOverLimit && styles.overLimitScore
           ]}
         >
           {score}
@@ -127,9 +128,9 @@ const PlayerCard = ({
                   styles.progressBar,
                   { 
                     width: `${progress}%`,
-                    backgroundColor: gameType === 'chinchon' ? getChinchonBarColor() : styles.progressBar.backgroundColor,
+                    backgroundColor: gameType === 'escoba' ? '#bbff01' : (gameType === 'chinchon' ? getChinchonBarColor() : styles.progressBar.backgroundColor),
                   },
-                  isOverLimit && styles.overLimitProgress
+                  gameType !== 'escoba' && isOverLimit && styles.overLimitProgress
                 ]}
               />
             </View>
@@ -137,9 +138,55 @@ const PlayerCard = ({
         </>
       )}
 
-      {isWinner && (
-        <View style={styles.crownContainer}>
-          <Crown size={20} color="#171717" />
+      {gameType === 'truco' && isWinner && (
+        <View style={{
+          position: 'absolute',
+          top: -10,
+          right: -10,
+          backgroundColor: '#181818',
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 3,
+          borderColor: '#bbff01',
+        }}>
+          <Crown size={20} color="#fff" />
+        </View>
+      )}
+      {gameType === 'escoba' && isWinner && (
+        <View style={{
+          position: 'absolute',
+          top: -10,
+          right: -10,
+          backgroundColor: '#181818',
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 3,
+          borderColor: '#bbff01',
+        }}>
+          <Crown size={20} color="#fff" />
+        </View>
+      )}
+      {gameType === 'chinchon' && isWinner && (
+        <View style={{
+          position: 'absolute',
+          top: -10,
+          right: -10,
+          backgroundColor: '#181818',
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 3,
+          borderColor: '#bbff01',
+        }}>
+          <Crown size={20} color="#fff" />
         </View>
       )}
     </TouchableOpacity>
@@ -150,9 +197,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#232323', // Gris oscuro cálido
     borderRadius: 16,
-    padding: 20,
+    padding: 12,
     borderWidth: 2,
-    marginBottom: 16,
     borderColor: '#bbff01', // Verde lima homogéneo
   },
   header: {
@@ -180,7 +226,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   winnerScore: {
-    color: '#FFFF00', // Amarillo neón para ganador
+    // color: '#FFFF00', // Elimina el amarillo para ganador
   },
   overLimitScore: {
     color: '#FF0000', // Rojo neón para límite excedido
@@ -227,8 +273,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -10,
     right: -10,
-    backgroundColor: '#232323', // Gris oscuro cálido
-    borderRadius: 0,
+    backgroundColor: '#fff', // Fondo blanco
+    borderRadius: 20, // Círculo perfecto
     width: 40,
     height: 40,
     justifyContent: 'center',

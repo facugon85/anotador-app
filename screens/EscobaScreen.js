@@ -41,13 +41,16 @@ export default function EscobaScreen({ navigation }) {
   const [selectedPlayerIndex, setSelectedPlayerIndex] = useState(null);
   const [isResetModalVisible, setResetModalVisible] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiShown, setConfettiShown] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const confettiAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    setPlayerNames([...escobaPlayers]);
-  }, [escobaPlayers]);
+    if (!editing) {
+      setPlayerNames([...escobaPlayers]);
+    }
+  }, [escobaPlayers, editing]);
   
   const MAX_SCORE = 15;
   const winner = escobaScores.find((score) => score.score >= MAX_SCORE);
@@ -62,15 +65,16 @@ export default function EscobaScreen({ navigation }) {
   }, [escobaScores]);
 
   useEffect(() => {
-    if (winner) {
+    if (winner && !confettiShown) {
       setModalVisible(false);
       showConfettiAnimation();
+      setConfettiShown(true);
       Alert.alert('¡Fin del Juego!', `¡${winner.name} ha ganado la partida!`, [
         { text: 'Nueva Partida', onPress: () => setResetModalVisible(true), style: 'destructive' },
         { text: 'OK', style: 'cancel' },
       ]);
     }
-  }, [winner]);
+  }, [winner, confettiShown]);
 
   const showConfettiAnimation = () => {
     setShowConfetti(true);
@@ -94,6 +98,7 @@ export default function EscobaScreen({ navigation }) {
   const handleReset = () => {
     setResetModalVisible(true);
     hideConfettiAnimation();
+    setConfettiShown(false);
   };
 
   const openEditModal = () => {
@@ -139,7 +144,6 @@ export default function EscobaScreen({ navigation }) {
   };
 
   const handleOpenModal = (index) => {
-    if (winner) return;
     setSelectedPlayerIndex(index);
     setModalVisible(true);
   };
@@ -149,13 +153,13 @@ export default function EscobaScreen({ navigation }) {
     : null;
 
   const modalButtons = selectedPlayer ? [
-    { label: 'Escoba +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Medal size={18} color="white"/> },
-    { label: 'Cartas +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
-    { label: 'Oros +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
-    { label: 'Setenta +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
-    { label: '7 de Oro +1', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="white"/> },
-    { label: 'Descontar -1', onPress: () => addEscobaScore(selectedPlayer.index, -1), icon: <Minus size={18} color="white"/>, variant: 'danger' },
-  ].map(btn => ({ ...btn, disabled: !!winner })) : [];
+    { label: 'Escoba', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Medal size={18} color="#bbff01"/> },
+    { label: 'Cartas', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="#bbff01"/> },
+    { label: 'Oros', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="#bbff01"/> },
+    { label: 'Setenta', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="#bbff01"/> },
+    { label: '7 de Oro', onPress: () => addEscobaScore(selectedPlayer.index, 1), icon: <Star size={18} color="#bbff01"/> },
+    { label: '-1', onPress: () => addEscobaScore(selectedPlayer.index, -1), icon: null, variant: 'danger', disabled: selectedPlayer.score <= 0 },
+  ] : [];
 
   const EditPanel = () => (
     <Modal
@@ -177,15 +181,16 @@ export default function EscobaScreen({ navigation }) {
         ]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Ajustes</Text>
-            <TouchableOpacity onPress={closeEditModal} style={styles.closeButton}>
+            <TouchableOpacity onPress={closeEditModal} style={[styles.closeButton, { backgroundColor: '#232323', borderWidth: 2, borderColor: '#bbff01', borderRadius: 16, padding: 8, alignItems: 'center', justifyContent: 'center' }] }>
               <X size={24} color="white" />
             </TouchableOpacity>
           </View>
           <ScrollView style={styles.modalList}>
             <Text style={styles.sectionTitle}>Jugadores</Text>
             {playerNames.map((name, index) => (
-              <View key={index} style={styles.playerInputRow}>
+              <View key={`player-${index}`} style={styles.playerInputRow}>
                 <TextInput
+                  key={`input-${index}`}
                   style={styles.playerInput}
                   value={name}
                   onChangeText={(text) => {
@@ -194,6 +199,10 @@ export default function EscobaScreen({ navigation }) {
                     setPlayerNames(newNames);
                   }}
                   placeholderTextColor="#999"
+                  autoCorrect={false}
+                  autoCapitalize="words"
+                  blurOnSubmit={false}
+                  returnKeyType="done"
                 />
                 <TouchableOpacity onPress={() => removeEscobaPlayer(index)} disabled={escobaPlayers.length <= 2} style={{ marginLeft: 12 }}>
                   <Minus size={28} color="#ef4444" />
@@ -201,15 +210,21 @@ export default function EscobaScreen({ navigation }) {
               </View>
             ))}
             <ScoreButton
-              label="Agregar Jugador"
+              label={
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserPlus size={20} color="white" style={{ marginRight: 8 }} />
+                  <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Agregar Jugador</Text>
+                </View>
+              }
               onPress={() => {
                 addEscobaPlayer();
-                // El useEffect se encargará de actualizar playerNames
+                // Actualizar directamente el estado local
+                const newPlayerNames = [...playerNames, `Jugador ${playerNames.length + 1}`];
+                setPlayerNames(newPlayerNames);
               }}
-              icon={<UserPlus size={20} color="white"/>}
               variant="secondary"
               disabled={escobaPlayers.length >= 6}
-              style={styles.addPlayerButton}
+              style={[styles.addPlayerButton, { paddingVertical: 14, minHeight: 48, borderRadius: 16 }]}
             />
             <ScoreButton label="Guardar Cambios" onPress={handleSave} style={styles.saveButton}/>
           </ScrollView>
@@ -259,17 +274,18 @@ export default function EscobaScreen({ navigation }) {
 
         <View>
           {escobaScores.map((player, index) => (
-            <PlayerCard
-              key={index}
-              name={player.name}
-              score={player.score}
-              isWinner={winner?.name === player.name}
-              isLeading={leader?.name === player.name}
-              isLast={last?.name === player.name && escobaScores.length > 1}
-              maxScore={MAX_SCORE}
-              onPress={() => handleOpenModal(index)}
-              gameType="escoba"
-            />
+            <View key={index} style={{ marginBottom: index !== escobaScores.length - 1 ? 24 : 0 }}>
+              <PlayerCard
+                name={player.name}
+                score={player.score}
+                isWinner={winner?.name === player.name}
+                isLeading={leader?.name === player.name}
+                isLast={last?.name === player.name && escobaScores.length > 1}
+                maxScore={MAX_SCORE}
+                onPress={() => handleOpenModal(index)}
+                gameType="escoba"
+              />
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -277,8 +293,24 @@ export default function EscobaScreen({ navigation }) {
       {!editing && (
         <View style={styles.bottomBar}>
           <View style={styles.buttonRow}>
-            <ScoreButton label="Volver" onPress={() => navigation.navigate('Home')} variant="black" icon={<ArrowLeft size={20} color="white"/>} style={[styles.bottomButton, { backgroundColor: '#232323' }]} />
-            <ScoreButton label="Reiniciar" onPress={handleReset} variant="danger" icon={<RefreshCw size={20} color="white"/>} style={styles.bottomButton} />
+            <ScoreButton 
+              label={<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowLeft size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Volver</Text>
+              </View>}
+              onPress={() => navigation.navigate('Home')}
+              variant="black"
+              style={[styles.bottomButton, { backgroundColor: '#232323', borderColor: '#bbff01', borderWidth: 2, paddingHorizontal: 28, paddingVertical: 12 }]}
+            />
+            <ScoreButton 
+              label={<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <RefreshCw size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Reiniciar</Text>
+              </View>}
+              onPress={handleReset}
+              variant="danger"
+              style={[styles.bottomButton, { paddingHorizontal: 28, paddingVertical: 12 }]}
+            />
           </View>
         </View>
       )}
@@ -334,6 +366,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#bbff01', // Borde verde
   },
   editPanel: {
     position: 'absolute',
@@ -488,7 +522,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
     borderWidth: 2,
-    borderColor: '#444',
+    borderColor: '#bbff01', // Verde lima
     shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0,

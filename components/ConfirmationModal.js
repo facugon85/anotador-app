@@ -24,8 +24,8 @@ const ConfirmationModal = ({ isVisible, onClose, onConfirm, title, message }) =>
             <ScoreButton
               label="Cancelar"
               onPress={onClose}
-              variant="secondary"
-              style={styles.button}
+              style={styles.cancelButton}
+              variant="black"
             />
             <ScoreButton
               label="Confirmar"
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     elevation: 8,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: '#bbff01',
   },
   title: {
     color: '#FFFFFF',
@@ -88,6 +88,17 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 8,
+  },
+  cancelButton: {
+    backgroundColor: '#181818',
+    borderColor: '#bbff01',
+    borderWidth: 2,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
 });
 

@@ -30,20 +30,27 @@ export default function ScoreButton({
       disabled={disabled}
       activeOpacity={0.8}
     >
-      {icon && <View style={styles.iconContainer}>{icon}</View>}
-      <Text style={getTextStyle()}>{label}</Text>
+      {React.isValidElement(label) ? (
+        // Si el label es un View personalizado, no agregues márgenes
+        label
+      ) : (
+        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, width: '100%', height: '100%' }}>
+          {icon && <View style={{ marginBottom: 8 }}>{icon}</View>}
+          <Text style={getTextStyle()}>{label}</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
     borderWidth: 2,
   },
   default: {
@@ -69,7 +76,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginLeft: 8,
+    marginLeft: 0,
+    marginRight: 0,
+    marginTop: 0,
+    marginBottom: 0,
   },
   defaultText: {
     color: '#fff',
@@ -83,9 +93,5 @@ const styles = StyleSheet.create({
   limeText: {
     color: '#fff',
     fontWeight: 'bold',
-  },
-  iconContainer: {
-    marginRight: 8,
-    marginBottom: 0,
   },
 }); 

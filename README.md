@@ -15,6 +15,7 @@ Una aplicación moderna y elegante para llevar el puntaje de tus juegos de carta
 - **Personalización completa** de nombres de equipos/jugadores
 - **Sistema de puntuación inteligente** con validaciones
 - **Celebraciones animadas** con confeti al detectar ganadores
+- **Continuidad de juego** en Escoba de 15 (seguir contando después del confeti)
 - **Historial de partidas** con función de deshacer
 - **Modales de edición** con animaciones fluidas
 - **Responsive design** que funciona en móvil y web
@@ -63,6 +64,24 @@ Una aplicación moderna y elegante para llevar el puntaje de tus juegos de carta
 - **Integración con Discord/Telegram**
 
 ## 📋 Bitácora de Cambios
+
+### **v1.3.8** - 2025-01-XX
+- 🎯 **Continuidad en Escoba de 15**: Ahora puedes seguir contando después de que aparezca el confeti cuando un jugador llega a 15 puntos, permitiendo determinar quién es el verdadero ganador en casos especiales.
+- 🔄 **Modal siempre activo**: Los botones de puntuación ya no se deshabilitan cuando hay un ganador, manteniendo la funcionalidad completa.
+- 🎨 **Estilo Escoba**: El número ganador se mantiene verde, la corona es blanca con fondo oscuro y borde verde, y la barra de progreso siempre es verde.
+- 🟩 **Bordes verdes**: Ahora los botones principales, modales y campos de texto tienen bordes verdes para mayor coherencia visual.
+- 🟢 **Iconos verdes**: Todos los iconos de sumar puntos son verdes, y los botones están perfectamente alineados y centrados.
+- ➖ **Botón -1**: El botón de descontar solo muestra "-1", es más grande y rojo, y se deshabilita si el puntaje es 0.
+- 📝 **Edición de nombres**: Mejorada la experiencia de edición de nombres, sin perder foco ni sobrescribir mientras editás.
+- 🖱️ **Botones con padding**: Los botones "Volver" y "Reiniciar" ahora tienen padding cómodo y los iconos alineados a la izquierda del texto.
+- ✅ **Modales con borde verde**: Todos los modales importantes tienen borde verde para destacar.
+
+### **v1.3.7** - 2025-06-25
+- 👑 **Corona de ganador**: Ahora la corona tiene fondo blanco, borde amarillo y es perfectamente circular.
+- 📝 **Roadmap actualizado**: Se agregó Generala, se eliminaron PWA, estadísticas avanzadas y modo offline.
+- 🌐 **Soporte multilenguaje**: Aviso de que próximamente la app será multilenguaje.
+- 💌 **Agradecimiento y contacto**: Se agregó una leyenda con el correo facundonic.gonzalez@gmail.com para recibir feedback.
+- 🛠️ **Corrección visual**: El cambio de cantidad de jugadores en Truco ahora es más suave y sin parpadeos.
 
 ### **v1.3.0** - 2024-12-19
 - 🎨 **Confeti bicolor**: Implementación de confeti con 2 colores verdes diferentes (#84cc16 y #22c55e) para mayor variedad visual
@@ -122,6 +141,14 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Comunidad React Native** por las librerías y documentación
 - **Lucide** por los iconos hermosos
 - **Todos los beta testers** que probaron la app y dieron feedback
+
+# Mejoras visuales y de usabilidad (v1.3.9)
+
+- **Chinchón:**
+  - Alineación perfecta entre PlayerCard y el botón "¡Chinchón!". Ahora ambos tienen el mismo alto y los bordes quedan perfectamente alineados.
+- **Escoba de 15:**
+  - Mayor separación entre los tanteadores (PlayerCard) para mejor visualización.
+  - En los ajustes, el botón "Agregar Jugador" ahora muestra el icono a la izquierda del texto y tiene más altura, igual que el botón verde de "Guardar Cambios".
 
 ---
 

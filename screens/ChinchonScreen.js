@@ -55,8 +55,10 @@ export default function ChinchonScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    setPlayerNames(jugadores.map(j => j.nombre));
-  }, [jugadores]);
+    if (!editing) {
+      setPlayerNames(jugadores.map(j => j.nombre));
+    }
+  }, [jugadores, editing]);
 
   const { leader, last } = useMemo(() => {
     if (jugadores.length < 2) return { leader: null, last: null };
@@ -155,13 +157,19 @@ export default function ChinchonScreen({ navigation }) {
   const selectedPlayer = selectedPlayerId ? jugadores.find(j => j.id === selectedPlayerId) : null;
 
   const modalButtons = selectedPlayer ? [
-    { label: '+1', onPress: () => agregarPuntos(selectedPlayer.id, 1) },
-    { label: '+5', onPress: () => agregarPuntos(selectedPlayer.id, 5) },
-    { label: '+10', onPress: () => agregarPuntos(selectedPlayer.id, 10) },
-    { label: '+20', onPress: () => agregarPuntos(selectedPlayer.id, 20) },
-    { label: '-10 (Corte)', onPress: () => corte(selectedPlayer.id), variant: 'secondary' },
-    { label: '¡Chinchón!', onPress: () => chinchon(selectedPlayer.id), variant: 'primary', icon: <Sparkles size={18} color="white"/> },
-  ].map(btn => ({ ...btn, disabled: !!ganador?.length })) : [];
+    { label: '+1 pts', onPress: () => agregarPuntos(selectedPlayer.id, 1) },
+    { label: '+5 pts', onPress: () => agregarPuntos(selectedPlayer.id, 5) },
+    { label: '+10 pts', onPress: () => agregarPuntos(selectedPlayer.id, 10) },
+    { label: '-1 pts', onPress: () => agregarPuntos(selectedPlayer.id, -1), labelStyle: { color: '#ef4444', fontWeight: 'bold' } },
+    { label: '-10 pts', onPress: () => agregarPuntos(selectedPlayer.id, -10), labelStyle: { color: '#ef4444', fontWeight: 'bold' } },
+    { label: '-25 pts', onPress: () => agregarPuntos(selectedPlayer.id, -25), labelStyle: { color: '#ef4444', fontWeight: 'bold' } },
+  ] : [];
+
+  const agregarJugadorConNombre = () => {
+    const nuevoNombre = `Jugador ${jugadores.length + 1}`;
+    agregarJugador(nuevoNombre);
+    setPlayerNames([...playerNames, nuevoNombre]);
+  };
 
   const EditPanel = () => (
     <Modal
@@ -207,9 +215,11 @@ export default function ChinchonScreen({ navigation }) {
               </View>
             ))}
             <ScoreButton
-              label="Agregar Jugador"
-              onPress={agregarJugador}
-              icon={<UserPlus size={20} color="white"/>}
+              label={<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <UserPlus size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Agregar Jugador</Text>
+              </View>}
+              onPress={agregarJugadorConNombre}
               variant="secondary"
               disabled={jugadores.length >= 6}
               style={styles.addPlayerButton}
@@ -282,17 +292,38 @@ export default function ChinchonScreen({ navigation }) {
 
         <View>
           {jugadores.map((jugador) => (
-            <PlayerCard
-              key={jugador.id}
-              name={jugador.nombre}
-              score={jugador.puntos}
-              isWinner={ganador?.some(g => g.id === jugador.id)}
-              isLeading={leader?.id === jugador.id}
-              isLast={last?.id === jugador.id && jugadores.length > 1}
-              maxScore={limitePuntos}
-              onPress={() => handleOpenModal(jugador)}
-              gameType="chinchon"
-            />
+            <View key={jugador.id} style={{ flexDirection: 'row', alignItems: 'stretch', marginBottom: 16 }}>
+              {/* 70% PlayerCard */}
+              <View style={{ flex: 7 }}>
+                <PlayerCard
+                  name={jugador.nombre}
+                  score={jugador.puntos}
+                  isWinner={ganador?.some(g => g.id === jugador.id)}
+                  isLeading={leader?.id === jugador.id}
+                  isLast={last?.id === jugador.id && jugadores.length > 1}
+                  maxScore={limitePuntos}
+                  onPress={() => handleOpenModal(jugador)}
+                  gameType="chinchon"
+                />
+              </View>
+              {/* 30% Botón Chinchón, cuadrado, mismo alto y ancho que PlayerCard */}
+              <View style={{ flex: 3, alignItems: 'flex-start', justifyContent: 'center', marginLeft: 8 }}>
+                <ScoreButton
+                  label={<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                    <View style={{ alignItems: 'center', marginBottom: 4 }}>
+                      <Sparkles size={32} color="#bbff01" />
+                    </View>
+                    <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16, textAlign: 'center' }}>¡Chinchón!</Text>
+                  </View>}
+                  onPress={() => {
+                    chinchon(jugador.id);
+                    showConfettiAnimation && showConfettiAnimation();
+                  }}
+                  variant="primary"
+                  style={{ height: '100%', aspectRatio: 1, borderRadius: 16, borderColor: '#bbff01', borderWidth: 2, backgroundColor: '#232323', justifyContent: 'center', alignItems: 'center', alignSelf: 'stretch' }}
+                />
+              </View>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -300,8 +331,24 @@ export default function ChinchonScreen({ navigation }) {
       {!editing && (
         <View style={styles.bottomBar}>
           <View style={styles.buttonRow}>
-            <ScoreButton label="Volver" onPress={() => navigation.navigate('Home')} variant="black" icon={<ArrowLeft size={20} color="white"/>} style={[styles.bottomButton, { backgroundColor: '#232323' }]} />
-            <ScoreButton label="Reiniciar" onPress={handleReset} variant="danger" icon={<RefreshCw size={20} color="white"/>} style={styles.bottomButton} />
+            <ScoreButton 
+              label={<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowLeft size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Volver</Text>
+              </View>}
+              onPress={() => navigation.navigate('Home')}
+              variant="black"
+              style={[styles.bottomButton, { backgroundColor: '#232323', borderColor: '#bbff01', borderWidth: 2, paddingHorizontal: 28, paddingVertical: 12 }]}
+            />
+            <ScoreButton 
+              label={<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <RefreshCw size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Reiniciar</Text>
+              </View>}
+              onPress={handleReset}
+              variant="danger"
+              style={[styles.bottomButton, { paddingHorizontal: 28, paddingVertical: 12 }]}
+            />
           </View>
         </View>
       )}
@@ -357,6 +404,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#bbff01',
   },
   editPanel: {
     position: 'absolute',
@@ -402,7 +451,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flex: 1,
     borderWidth: 2,
-    borderColor: '#444',
+    borderColor: '#bbff01',
     shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0,
@@ -418,6 +467,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
     marginBottom: 8,
+    paddingVertical: 14,
+    minHeight: 48,
   },
   addPlayerButtonText: {
     color: '#fff',
@@ -537,7 +588,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}); 
 
 const StackScreen = () => (
   <Stack.Navigator>

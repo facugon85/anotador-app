@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.js": "/anotador-app/static/js/main.c9b9e053.js",
-    "static/js/214.91fd4398.js": "/anotador-app/static/js/214.91fd4398.js",
+    "main.js": "/anotador-app/static/js/main.f7e268be.js",
+    "static/js/525.a968b9f0.js": "/anotador-app/static/js/525.a968b9f0.js",
     "index.html": "/anotador-app/index.html",
     "serve.json": "/anotador-app/serve.json",
     "manifest.json": "/anotador-app/manifest.json",
-    "main.c9b9e053.js.map": "/anotador-app/static/js/main.c9b9e053.js.map",
-    "214.91fd4398.js.map": "/anotador-app/static/js/214.91fd4398.js.map"
+    "main.f7e268be.js.map": "/anotador-app/static/js/main.f7e268be.js.map",
+    "525.a968b9f0.js.map": "/anotador-app/static/js/525.a968b9f0.js.map"
   },
   "entrypoints": [
-    "static/js/214.91fd4398.js",
-    "static/js/main.c9b9e053.js"
+    "static/js/525.a968b9f0.js",
+    "static/js/main.f7e268be.js"
   ]
 }

@@ -400,28 +400,49 @@ export default function TrucoScreen({ navigation }) {
 
         <View>
           {equipos.map((team, index) => (
-            <PlayerCard
-              key={index}
-              name={team.name}
-              score={team.score}
-              isWinner={winner?.name === team.name}
-              isLeading={leader?.name === team.name}
-              isLast={last?.name === team.name && equipos.length > 1}
-              maxScore={MAX_SCORE}
-              onPress={() => handleOpenModal(team.index ?? index)}
-              gameType="truco"
-              playerCount={trucoPlayerCount}
-              isCurrentTurn={trucoPlayerCount === 6}
-              players={trucoPlayerCount === 6 ? team.players : undefined}
-            />
+            <View key={index} style={{ marginBottom: index !== equipos.length - 1 ? 24 : 0 }}>
+              <PlayerCard
+                name={team.name}
+                score={team.score}
+                isWinner={winner?.name === team.name}
+                isLeading={leader?.name === team.name}
+                isLast={last?.name === team.name && equipos.length > 1}
+                maxScore={MAX_SCORE}
+                onPress={() => handleOpenModal(team.index ?? index)}
+                gameType="truco"
+                playerCount={trucoPlayerCount}
+                isCurrentTurn={trucoPlayerCount === 6}
+                players={trucoPlayerCount === 6 ? team.players : undefined}
+              />
+            </View>
           ))}
         </View>
       </ScrollView>
 
       <View style={styles.bottomBar}>
         <View style={styles.buttonRow}>
-          <ScoreButton label="Volver" onPress={() => navigation.navigate('Home')} variant="black" icon={<ArrowLeft size={20} color="white"/>} style={[styles.bottomButton, { backgroundColor: '#232323' }]} />
-          <ScoreButton label="Reiniciar" onPress={handleReset} variant="danger" icon={<RefreshCw size={20} color="white"/>} style={styles.bottomButton} />
+          <ScoreButton
+            label={
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowLeft size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Volver</Text>
+              </View>
+            }
+            onPress={() => navigation.navigate('Home')}
+            variant="black"
+            style={[styles.bottomButton, { backgroundColor: '#232323', paddingVertical: 14, minHeight: 48, borderRadius: 16, borderWidth: 2, borderColor: '#bbff01' }]}
+          />
+          <ScoreButton
+            label={
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <RefreshCw size={20} color="white" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>Reiniciar</Text>
+              </View>
+            }
+            onPress={handleReset}
+            variant="danger"
+            style={[styles.bottomButton, { paddingVertical: 14, minHeight: 48, borderRadius: 16 }]}
+          />
         </View>
       </View>
 
@@ -478,6 +499,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#bbff01',
   },
   teamCard: {
     backgroundColor: CARD_BG,

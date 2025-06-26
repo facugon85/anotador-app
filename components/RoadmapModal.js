@@ -36,6 +36,12 @@ const RoadmapModal = ({ isVisible, onClose }) => {
       icon: <CheckCircle size={20} color="#84cc16" />
     },
     {
+      title: 'Generala',
+      description: 'El clásico juego de dados para toda la familia',
+      status: 'pending',
+      icon: <Clock size={20} color="#fbbf24" />
+    },
+    {
       title: 'Póker',
       description: 'Variantes de póker para múltiples jugadores',
       status: 'pending',
@@ -48,26 +54,8 @@ const RoadmapModal = ({ isVisible, onClose }) => {
       icon: <Clock size={20} color="#fbbf24" />
     },
     {
-      title: 'Estadísticas avanzadas',
-      description: 'Historial de partidas, gráficos y análisis de rendimiento',
-      status: 'pending',
-      icon: <Star size={20} color="#fbbf24" />
-    },
-    {
-      title: 'Modo offline mejorado',
-      description: 'Sincronización automática cuando hay conexión',
-      status: 'pending',
-      icon: <Star size={20} color="#fbbf24" />
-    },
-    {
       title: 'Temas personalizables',
       description: 'Diferentes colores y estilos para la interfaz',
-      status: 'pending',
-      icon: <Star size={20} color="#fbbf24" />
-    },
-    {
-      title: 'Versión Web (PWA)',
-      description: 'Instala la app en cualquier dispositivo desde el navegador',
       status: 'pending',
       icon: <Star size={20} color="#fbbf24" />
     },
@@ -82,6 +70,12 @@ const RoadmapModal = ({ isVisible, onClose }) => {
       description: 'Guarda tu progreso y estadísticas en la nube para acceder desde cualquier dispositivo.',
       status: 'pending',
       icon: <UserCircle size={20} color="#fbbf24" />
+    },
+    {
+      title: 'Soporte multilenguaje',
+      description: 'La app estará disponible en varios idiomas para más jugadores.',
+      status: 'pending',
+      icon: <Star size={20} color="#fbbf24" />
     }
   ];
 
@@ -97,7 +91,7 @@ const RoadmapModal = ({ isVisible, onClose }) => {
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Roadmap</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color="#84cc16" />
+              <X size={24} color="#fff" />
             </TouchableOpacity>
           </View>
           <ScrollView style={styles.roadmapList} showsVerticalScrollIndicator={false}>
@@ -123,6 +117,7 @@ const RoadmapModal = ({ isVisible, onClose }) => {
                   ¡Cada colaboración ayuda a mantener el proyecto vivo!
                 </Text>
               </TouchableOpacity>
+              <Text style={[styles.footerNoteText, { marginTop: 18, fontSize: 14, color: '#bbff01', textAlign: 'center' }]}>¿Tenés sugerencias o feedback? ¡Escribime a <Text style={{textDecorationLine: 'underline', color: '#fff'}} onPress={() => Linking.openURL('mailto:facundonic.gonzalez@gmail.com')}>facundonic.gonzalez@gmail.com</Text>! ¡Gracias por ayudar a mejorar la app!</Text>
             </View>
           </ScrollView>
         </View>
